@@ -1,0 +1,27 @@
+@import url("../../index.css");
+
+
+.scanPage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 50px;
+    gap: 50px;
+}
+
+.lastScan {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.lastScanColor {
+    width: 200px;
+    height: 100px;
+    background-color: transparent;
+    border-radius: 1rem;
+    display: flex;
+    padding: 20px;
+    justify-content: flex-start;
+    align-items: center;
+}

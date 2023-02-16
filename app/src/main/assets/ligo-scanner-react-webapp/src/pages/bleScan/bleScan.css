@@ -1,43 +1,22 @@
-@import url("font/Inter.woff");
+@import url("../../index.css");
 
-:root {
-    --primaryColor:#1DA0A5;
-    --lightGray:#F6F6F6;
-}
 
-body * {
-    font-family:'Inter';  
-}
-
-body::after, body::before, * {
-    margin: 0;
-    padding: 0;
-    border: none;
-}
-
-.app {
-    padding: 10px;
-    padding-top: 20px;
+.bleScanPage {
+    padding: 20px;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 20px;
-    
+    height: var(100vh - var(--navbarHeight));
+    margin-top: var(--navbarHeight);
 }
 
-button {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 10px;
-    gap: 12px;
-    border: 1px solid var(--primaryColor) ;
-    background: var(--primaryColor);
-    box-shadow: 0px 0px 5px black;
-    border-radius: 1rem;
+h1 {
+    font-weight: 100;
+}
+
+.device-found-title, .paired-device-title {
     font-size: 16px;
-    color: white;
-    width: 80%;
 }
 
 .found-devices {
@@ -83,20 +62,26 @@ button {
 }
 
 
-.my-devices {
+.paired-device {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 20px;
 }
 
-#value {
-    width: 200px;
-    height: 100px;
-    /* background-color: rgb(0, 0, 0); */
-    border-radius: 1rem;
+.application-info {
     display: flex;
+    align-items: flex-start;
+    flex-direction: column;
+    position: absolute;
+    bottom: 20px;
+    /* gap: 10px; */
+    border: 1px solid var(--gray);
     padding: 20px;
-    justify-content: flex-start;
-    align-items: center;
+    border-radius: 1rem;
+}
+.application-info > p {
+    text-align: left;
+    color: var(--gray);
+    /* border-bottom: 1px solid var(--gray); */
 }

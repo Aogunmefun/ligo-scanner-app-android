@@ -1,0 +1,19 @@
+@import url("../../index.css");
+
+
+.loader {
+    position: absolute;
+    top: 0;
+    /* top: 40%; */
+    /* left: 30%; */
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    flex-direction: column;
+    gap: 50px;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--lightGray);
+    opacity: 0.6;
+    
+}
