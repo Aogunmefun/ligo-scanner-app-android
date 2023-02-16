@@ -1,0 +1,35 @@
+@import url("../../index.css");
+
+.drillholeConfig {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    
+    width: 100%;
+    background-color: rgb(255, 255, 255, 0.8);
+    /* opacity: 0.5; */
+    padding-top: 20px;
+    position: absolute;
+    height: 100vh;
+    top: 0;
+    z-index: 2;
+    padding-top: 300px;
+    
+}
+
+.drillholeConfigForm {
+    border: 1px solid var(--gray);
+    border-radius: 2rem;
+    width: 90%;
+    padding: 20px;
+    height: fit-content;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.drillholeConfigForm > label {
+    text-align: left;
+    align-self: flex-start;
+}

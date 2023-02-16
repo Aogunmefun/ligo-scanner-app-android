@@ -20,6 +20,7 @@ import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.AlignmentSpan;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -61,6 +62,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Set;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -139,6 +141,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     }
+
 
     @JavascriptInterface
     public void scan() {
@@ -242,6 +245,12 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    @JavascriptInterface
+    public void disconnect() {
+        Log.d("Try disconnect", "Device Disconnecting");
+        sensor.disconnect();
+    }
+
     private final IDeviceListener sensorCallback = new IDeviceListener() {
         @Override
         public void onConnectingStarted() {
@@ -286,7 +295,13 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onDeviceDisconnected() {
-
+            Log.d("Disconnected", "Device Disconnected");
+            webView.post(new Runnable() {
+                @Override
+                public void run() {
+                    webView.evaluateJavascript("window.dispatchEvent(new CustomEvent('disconnected'))",null);
+                }
+            });
         }
 
         @Override
@@ -319,6 +334,28 @@ public class MainActivity extends AppCompatActivity {
     public void scanColor() {
         Log.d("Scan Start", "Scan initiated");
         sensor.runSingleScan(NixDevice.SCAN_TYPE_D50, true);
+    }
+
+    @Override
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+
+        if (keyCode == 24) {
+            if (sensor != null) {
+                Log.d("key pressed", String.valueOf(keyCode));
+                webView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        webView.evaluateJavascript("window.dispatchEvent(new CustomEvent('scanning'))",null);
+                    }
+                });
+                scanColor();
+                return true;
+            }
+
+
+        }
+
+        return false;
     }
 
     private static String[] requiredBluetoothPermissions() {

@@ -1,0 +1,75 @@
+@import url("../../index.css");
+
+
+.drillhole {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    gap: 20px;
+}
+
+.hole {
+    /* height: 120px; */
+    height: fit-content;
+    border-radius: 1rem;
+    border: 1px solid var(--gray);
+    width: 90%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 10px;
+    padding-bottom: 20px;
+    gap: 10px;
+    /* padding: 10px; */
+    overflow: hidden;
+}
+
+.holeinfo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    gap: 10px;
+    
+    
+}
+.holeinfo > h5, .hole > h5 {
+    color: var(--gray);
+    border-bottom: 1px solid var(--gray) ;
+}
+.holeinfo > h6 {
+    align-self: flex-start;
+    text-indent: 20px;
+}
+
+.holeScan {
+    border: 1px solid var(--primaryColor);
+    width: 90%;
+    padding: 10px;
+    border-radius: 0.5rem;
+    height: 50px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 50px;
+    
+}
+.holeScan * {
+    width: 33%;
+}
+.holeScan > h5 {
+    font-weight: 100;
+}
+
+.holeScanColor { 
+    width: 50px;
+    height: 20px;
+    /* background-color: transparent; */
+    border-radius: 1rem;
+    display: flex;
+    padding: 20px;
+    justify-content: flex-start;
+    align-items: center;
+}

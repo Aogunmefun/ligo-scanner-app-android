@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Helmet } from "react-helmet";
 import "./bleScan.css"
 import sensorimg from "./Nix_Mini2_Face_Amazon.png"
 import Loader from "../../components/loader/loader";
+import { Session } from "../../app";
 
 function BLEScan(props) {
     
@@ -11,13 +12,16 @@ function BLEScan(props) {
     const [scanning, setScanning] = useState(false)
     const [connecteddevice, setConnectedDevice] = useState()
     const [connecting, setConnecting] = useState(false)
+    const app = useContext(Session)
 
     useEffect(()=>{
         
         // window.deviceFound = new CustomEvent('deviceFound', {name: elem})
         window.addEventListener('deviceFound', handleDeviceFound)
-        window.addEventListener('connected', handleConnected)
         window.addEventListener('connecting', handleConnecting)
+        window.addEventListener('connected', handleConnected)
+        window.addEventListener('disconnected', handleDisconnected)
+
     })
 
     
@@ -44,11 +48,27 @@ function BLEScan(props) {
         //     console.log("Connected Device Address", device.detail.address, "stored address", storedDevice.address)
         //     return storedDevice.address===device.detail.address
         // })))
-        setConnectedDevice(scannedDevices.filter((storedDevice,index)=>storedDevice.address===device.detail.address))
+        let connectedDevice = scannedDevices.filter((storedDevice,index)=>storedDevice.address===device.detail.address)
+        app.device.name = connectedDevice[0].name
+        app.device.address = connectedDevice[0].address
+        app.device.type = connectedDevice[0].type
+        app.device.paired = true
         setConnecting(false)
-        setPaired(true)
         setScanning(false)
         
+    }
+
+    const handleDisconnected = ()=>{
+        app.device.name = null
+        app.device.address = null
+        app.device.type = null
+        app.device.paired = false
+        setConnecting(false)
+    }
+
+    const disconnect = ()=>{
+        setConnecting(true)
+        Android.disconnect()
     }
 
 
@@ -60,9 +80,9 @@ function BLEScan(props) {
 
     return(
         <div className="bleScanPage" style={{pointerEvents:`${connecting?"none":""}`}}>
-            {connecting?<Loader />:""}
-            <h1>Device Configuration</h1>
-            {!paired?<button disabled={scanning} onClick={()=>scan()} id="scan">{scanning?"Scanning...":"Scan for devices"}</button>:""}
+            {connecting?<Loader text={app.device.paired?"Disconnecting...":"Connecting..."} />:""}
+            <h1>{!app.device.paired?"Pair Device":"Device Paired"}</h1>
+            {!app.device.paired?<button disabled={scanning} onClick={()=>scan()} id="scan">{scanning?"Scanning...":"Scan for devices"}</button>:""}
             {
                 scanning?
                 <div className="found-devices">
@@ -89,7 +109,7 @@ function BLEScan(props) {
                 :""
             }
             {
-                paired?
+                app.device.paired?
                 <div className="paired-device">
                     <h5 className="paired-device-title">Paired Device:</h5>
                     <div className="paired-device">
@@ -99,14 +119,19 @@ function BLEScan(props) {
                                     <img width="100%" src={sensorimg} alt="" />
                                 </div>
                                 <div class="found-device-info">
-                                    <p>{`Name: ${connecteddevice[0].name}`}</p>
-                                    <p>{`Address: ${connecteddevice[0].address}`}</p>
-                                    <p>{`Type: ${connecteddevice[0].type}`}</p>
+                                    <p>{`Name: ${app.device.name}`}</p>
+                                    <p>{`Address: ${app.device.address}`}</p>
+                                    <p>{`Type: ${app.device.type}`}</p>
                                 </div>
                             </div>
                         }
                     </div>
                 </div>
+                :""
+            }
+            {
+                app.device.paired?
+                <button onClick={disconnect} className="btn--disconnectDevice">Disconnect</button>
                 :""
             }
             <div className="application-info">
