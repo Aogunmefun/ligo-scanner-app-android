@@ -6,6 +6,9 @@
     border-bottom: 1px solid var(--gray);
     display: flex;
     flex-direction: column;
+    position: fixed;
+    top: 0;
+    width: 100%;
     /* align-items: center; */
 }
 

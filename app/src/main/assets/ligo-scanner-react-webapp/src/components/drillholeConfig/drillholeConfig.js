@@ -17,6 +17,10 @@ function DrillHoleConfig(props) {
         console.log("submit")
     }
 
+    const handleClose = ()=>{
+
+    }
+
     const changeName = (ev)=>{
         setName(ev.target.value)
     }
@@ -30,14 +34,19 @@ function DrillHoleConfig(props) {
     return (
         <div className="drillholeConfig">
             <h4>Hole configuration</h4>
-            <form className="drillholeConfigForm" onSubmit={handleSubmit}>
-                <input required type="text" placeholder="Hole Name" value={name} onChange={changeName} />
-                <label htmlFor="interval">Inteval:</label>
-                <input required id="interval" type="number"  placeholder={0} value={interval} onChange={changeInterval}  />
-                <label htmlFor="start">Start Depth:</label>
-                <input required id="start" type="number"  placeholder={0} value={start} onChange={changeStart} />
-                <input type="submit" value="Create" />
-            </form>
+            <div className="drillholeConfigBox">
+                <form className="drillholeConfigForm" onSubmit={handleSubmit}>
+                    <input required type="text" placeholder="Hole Name" value={name} onChange={changeName} />
+                    <label htmlFor="interval">Inteval:</label>
+                    <input required id="interval" type="number"  placeholder={0} value={interval} onChange={changeInterval}  />
+                    <label htmlFor="start">Start Depth:</label>
+                    <input required id="start" type="number"  placeholder={0} value={start} onChange={changeStart} />
+                    <input type="submit" value="Create" />
+                    
+                </form>
+                <button onClick={props.handleCloseNewDrillhole} className="btn--closenewDrillhole">Close</button>
+            </div>
+            
         </div>
     )
 }

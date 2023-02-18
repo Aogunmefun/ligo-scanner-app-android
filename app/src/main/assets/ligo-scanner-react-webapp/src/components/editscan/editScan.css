@@ -1,0 +1,60 @@
+@import url("../../index.css");
+
+
+.editScan {
+    position: absolute;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 300px;
+    height: 100vh;
+    background-color: rgb(160, 160, 160, 0.3);
+    width: 100%;
+}
+
+.scanRender {
+    background-color: var(--white);
+    width: 90%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    border-radius: 1rem;
+    gap: 10px;
+}
+.scanRender > h5 {
+    font-weight: 100;
+}
+.scanRenderColor {
+    width: 100%;
+    height: 50px;
+    border-radius: 1rem;
+}
+
+.scanRenderInfo {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.scanRenderInfo > h5 {
+    font-weight: 100;
+    
+}
+
+.scanRenderButtons {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+}
+
+.scanRenderButtons > button {
+    border-radius: 0.8rem;
+    box-shadow: none;
+}

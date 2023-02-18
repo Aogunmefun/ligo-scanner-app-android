@@ -12,17 +12,22 @@ const app = {
     device: {
         name: null,
         address: null,
-        type: null,
+        // type: null,
         paired: false
     },
+    active: 0,
     sidenavOpen: false,
+    timeStamp:0,
+    rescan:false,
+    rescanindex:null,
     drillholes: [
         {
             config:{
                 name: "AA10",
                 interval: 10,
                 start: 50,
-                expanded: true
+                expanded: true,
+                
             },
             data:[
                 {
@@ -48,7 +53,47 @@ const app = {
                         g: 50,
                         b:2
                     }
-                }
+                },
+                
+            ],
+            custom:[
+
+            ]
+        },
+        {
+            config:{
+                name: "328",
+                interval: 10,
+                start: 50,
+                expanded: true,
+                
+            },
+            data:[
+                {
+                    depth: 50,
+                    color: {
+                        r: 123,
+                        g: 5,
+                        b:150
+                    }
+                },
+                {
+                    depth: 60,
+                    color: {
+                        r: 2,
+                        g: 5,
+                        b:150
+                    }
+                },
+                {
+                    depth: 70,
+                    color: {
+                        r: 123,
+                        g: 50,
+                        b:2
+                    }
+                },
+                
             ],
             custom:[
 
@@ -74,7 +119,7 @@ function App(props) {
             <Session.Provider value={app}>
                 <Routes>
                 
-                    <Route path="/" element={<HomePage />} />
+                    <Route path="/" element={<BLEScan />} />
                     <Route path="/configure" element={<ConfigurePage/>} />
                     <Route path="/blescan" element={<BLEScan />} />
                     <Route path="/scan" element={<ScanPage />} />

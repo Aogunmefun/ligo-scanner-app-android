@@ -8,10 +8,12 @@
     --black: #000000;
     --navbarHeight: 100px;
     --sidenavWidth: 80%;
+    --scanPageTabs: 60px
 }
 
 body * {
     font-family:'Inter';  
+    scroll-behavior: smooth;
 }
 
 body::after, body::before, * {

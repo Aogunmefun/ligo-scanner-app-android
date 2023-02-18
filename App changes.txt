@@ -1,0 +1,18 @@
+Call the name "Calorimeter". Hide the "Nix mini 2" - COMPLETED
+Put "New Drillhole" at the top of the screen - COMPLETED
+Seperate the active drillhole from the other drillholes that you have - COMPLETED
+Edit:
+	Retake measurement
+	Change the depth - COMPLETED
+	Change Interval - COMPLETED
+	Delete - COMPLETED
+Enter manual measurment
+
+Column headers. Don't repeat "Depth" - COMPLETED
+Color box should take the whole right side - COMPLETED
+Remove color value text - COMPLETED
+Have an export functionality (csv)
+The page should scroll down with the measurements - COMPLETED
+All drillhole tab should automaticaly scroll down when you expand - COMPLETED
+Block scanning when device is not connected - COMPLETED
+Add error message when scanning without a connected device

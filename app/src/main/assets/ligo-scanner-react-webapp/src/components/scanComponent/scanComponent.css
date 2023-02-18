@@ -1,0 +1,66 @@
+@import url("../../index.css");
+
+
+.scanComponent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.scanComponentElement {
+    border: 1px solid var(--primaryColor);
+    width: 90%;
+    padding: 10px;
+    border-radius: 0.5rem;
+    height: 50px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 50px;
+}
+
+.holeScan {
+    border: 1px solid var(--primaryColor);
+    width: 90%;
+    padding: 10px;
+    border-radius: 0.5rem;
+    height: 50px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 50px;
+    
+}
+.holeScan * {
+    width: 50%;
+}
+.holeScan > h5 {
+    font-weight: 100;
+}
+
+.holeScanColor { 
+    width: 100%;
+    height: 100%;
+    /* background-color: transparent; */
+    border-radius: 1rem;
+    display: flex;
+    padding: 20px;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.holeScan > input {
+    width: 50%;
+}
+
+.btn--editDepth {
+    height: 100%;
+    box-shadow: none;
+    border: none;
+    background-color: transparent;
+    color: var(--primaryColor);
+    border: 1px solid var(--gray);
+}

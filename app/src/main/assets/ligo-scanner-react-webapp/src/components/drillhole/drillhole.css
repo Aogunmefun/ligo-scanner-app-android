@@ -25,11 +25,13 @@
     overflow: hidden;
 }
 
+
+
 .holeinfo {
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 100%;
+    width: 30%;
     gap: 10px;
     
     
@@ -43,33 +45,18 @@
     text-indent: 20px;
 }
 
-.holeScan {
-    border: 1px solid var(--primaryColor);
-    width: 90%;
-    padding: 10px;
-    border-radius: 0.5rem;
-    height: 50px;
+.holebuttons {
     display: flex;
-    flex-direction: row;
-    justify-content: center;
+    flex-direction: column;
     align-items: center;
-    gap: 50px;
-    
-}
-.holeScan * {
-    width: 33%;
-}
-.holeScan > h5 {
-    font-weight: 100;
+    width: 70%;
+    gap:10px;
+
 }
 
-.holeScanColor { 
-    width: 50px;
-    height: 20px;
-    /* background-color: transparent; */
-    border-radius: 1rem;
-    display: flex;
-    padding: 20px;
-    justify-content: flex-start;
-    align-items: center;
+.btn--deleteHole {
+    background-color: rgb(252, 86, 86);
+    border: none;
+    box-shadow: none;
 }
+

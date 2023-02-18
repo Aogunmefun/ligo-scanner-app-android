@@ -193,14 +193,7 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void run() {
 //                            webView.loadUrl("javascript:newDevice('"+finalDeviceName+","+"Colorimeter"+","+finalDeviceAdd+"')");
-                            webView.evaluateJavascript("window.dispatchEvent(new CustomEvent('deviceFound', {detail:{name:'"+finalDeviceName+"',address:'"+finalDeviceAdd+"',type:'"+"Colorimeter"+"'}}))", new ValueCallback<String>() {
-                                @Override
-                                public void onReceiveValue(String value) {
-                                    Log.d("eventDispatch", value);
-                                }
-
-
-                            });
+                            webView.evaluateJavascript("window.dispatchEvent(new CustomEvent('deviceFound', {detail:{name:'" + "Colorimeter" + "',address:'" + finalDeviceAdd + "'}}))", null);
                         }
                     });
                 }
@@ -218,7 +211,7 @@ public class MainActivity extends AppCompatActivity {
             webView.post(new Runnable() {
                 @Override
                 public void run() {
-                    webView.evaluateJavascript("window.dispatchEvent(new CustomEvent('connected', {detail:{name:'"+sensor.getName()+"',address:'"+sensor.getAddress()+"',type:'"+"Colorimeter"+"'}}))", null);
+                    webView.evaluateJavascript("window.dispatchEvent(new CustomEvent('connected', {detail:{name:'"+sensor.getName()+"',address:'"+sensor.getAddress()+"'}}))", null);
                 }
             });
 
@@ -287,10 +280,11 @@ public class MainActivity extends AppCompatActivity {
 //                    webView.loadUrl("javascript:value('"+ String.valueOf(scanRgb[0])+","+ String.valueOf(scanRgb[1])+","+ Strirg.valueOf(scanRgb[2])+"')");
 //                    webView.evaluateJavascript("window.dispatchEvent(new CustomEvent('scanComplete', {detail:{r:'"+String.valueOf(scanRgb[0])+"',g:'"+String.valueOf(scanRgb[1])+"',b:'"+String.valueOf(scanRgb[2])+"'}}))", null);
                     webView.evaluateJavascript("window.dispatchEvent(new CustomEvent('scanComplete', {detail:{r:'"+String.valueOf(scanRgb[0])+"',g:'"+String.valueOf(scanRgb[1])+"',b:'"+String.valueOf(scanRgb[2])+"'}}))", null);
+                    Log.d("Scan Value", "Value: " + Arrays.toString(scanRgb));
                 }
             });
 
-            Log.d("Scan Value", "Value: " + Arrays.toString(scanRgb));
+
         }
 
         @Override
