@@ -27,11 +27,12 @@
 
 
 
-.holeinfo {
+.holeinfo--drillhole {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    width: 30%;
+    align-items: flex-start;
+
+    width: 100%;
     gap: 10px;
     
     
@@ -39,24 +40,71 @@
 .holeinfo > h5, .hole > h5 {
     color: var(--gray);
     border-bottom: 1px solid var(--gray) ;
+    font-size: 1.1rem;
 }
 .holeinfo > h6 {
     align-self: flex-start;
     text-indent: 20px;
 }
 
-.holebuttons {
+.drillhole-interval {
+    width: 100%;
+    display: flex;
+    justify-content: flex-start;
+    position: relative;
+    gap: 10px;
+}
+.drillhole-interval > input {
+    width: 30%;
+}
+.drillhole-interval > button {
+    /* position: absolute; */
+    /* right: 50px; */
+    width: fit-content;
+    border-radius: 50%;
+    /* border: 1px solid var(--gray); */
+    
+}   
+
+/* .holebuttons {
     display: flex;
     flex-direction: column;
     align-items: center;
+
     width: 70%;
     gap:10px;
 
-}
+} */
 
 .btn--deleteHole {
-    background-color: rgb(252, 86, 86);
-    border: none;
+    background-color: var(--gray);
+    border: none;   
     box-shadow: none;
+}
+
+.velocity-render {
+    border: 1px solid var(--primaryColor);
+    width: 90%;
+    padding: 10px;
+    border-radius: 0.5rem;
+    height: 50px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 50px;
+}
+
+.velocity-render * {
+    width: 50%;
+}
+
+.velocity-render > h5 {
+    /* width: 20%; */
+    font-weight: 100;
+    font-size: 1rem;
+}
+.velocity-render > input {
+    width: 50%;
 }
 

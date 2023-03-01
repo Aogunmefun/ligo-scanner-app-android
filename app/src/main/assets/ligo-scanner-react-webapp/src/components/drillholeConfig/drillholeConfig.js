@@ -10,10 +10,10 @@ function DrillHoleConfig(props) {
 
     const handleSubmit = (ev)=>{
         ev.preventDefault()
-        props.createDrillHole(name, parseInt(interval), parseInt(start))
+        props.createDrillHole(name.toUpperCase(), parseInt(interval), parseInt(start))
         setName("")
-        setInterval(0)
-        setStart(0)
+        setInterval("")
+        setStart("")
         console.log("submit")
     }
 

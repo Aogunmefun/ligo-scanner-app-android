@@ -45,7 +45,7 @@
 }
 
 .btn--closenewDrillhole {
-    background-color: #E71A1AAD;
-    border: 1px solid #E71A1AAD;
+    background-color: var(--gray);
+    border: 1px solid var(--gray);
     box-shadow: 0px 0px 0px;
 }

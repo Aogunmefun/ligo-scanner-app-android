@@ -2,7 +2,7 @@
 
 
 .loader {
-    position: absolute;
+    position: fixed;
     top: 0;
     /* top: 40%; */
     /* left: 30%; */

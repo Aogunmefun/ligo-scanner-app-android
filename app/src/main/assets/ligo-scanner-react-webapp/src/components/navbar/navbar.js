@@ -10,7 +10,7 @@ function Navbar(props) {
 
     return(
         <div className="navbar">
-            <SideNav open={open} />
+            <SideNav setOpen={setOpen} open={open} />
             <div className="navbar-top">
                 <div onClick={()=>setOpen(!open)} className="navbar-burger">
                     <i className="material-icons-round">menu</i>

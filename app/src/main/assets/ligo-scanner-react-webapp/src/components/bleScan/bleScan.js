@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Helmet } from "react-helmet";
 import "./bleScan.css"
-import sensorimg from "./Nix_Mini2_Face_Amazon.png"
+// import sensorimg from "./Nix_Mini2_Face_Amazon.png"
+import logo from "./Ligo-logo 2.png"
 import Loader from "../../components/loader/loader";
 import { Session } from "../../app";
 
@@ -44,26 +45,30 @@ function BLEScan(props) {
     }
 
     const handleConnected = (device)=>{
+        let temp = app.app
         console.log("Scanned Devices", JSON.stringify(scannedDevices[0]))
         // console.log("Remaining element", JSON.stringify(scannedDevices.filter((storedDevice,index)=>{
         //     console.log("Connected Device Address", device.detail.address, "stored address", storedDevice.address)
         //     return storedDevice.address===device.detail.address
         // })))
         let connectedDevice = scannedDevices.filter((storedDevice,index)=>storedDevice.address===device.detail.address)
-        app.device.name = connectedDevice[0].name
-        app.device.address = connectedDevice[0].address
+        temp.device.name = connectedDevice[0].name
+        temp.device.address = connectedDevice[0].address
         // app.device.type = connectedDevice[0].type
-        app.device.paired = true
+        temp.device.paired = true
+        app.setApp(temp)
         setConnecting(false)
         setScanning(false)
         
     }
 
     const handleDisconnected = ()=>{
-        app.device.name = null
-        app.device.address = null
+        let temp = app.app
+        temp.device.name = null
+        temp.device.address = null
         // app.device.type = null
-        app.device.paired = false
+        temp.device.paired = false
+        app.setApp(temp)
         setConnecting(false)
     }
 
@@ -81,10 +86,11 @@ function BLEScan(props) {
 
     return(
         <div className="bleScanPage" style={{pointerEvents:`${connecting?"none":""}`}}>
-            {connecting?<Loader text={app.device.paired?"Disconnecting...":"Connecting..."} />:""}
-            <h1>{!app.device.paired?"Pair Device":"Device Paired"}</h1>
+            {connecting?<Loader text={app.app.device.paired?"Disconnecting...":"Connecting..."} />:""}
+            <h2>Colorimeter</h2>
+            {/* <h1>{!app.app.device.paired?"Pair Device":"Device Paired"}</h1> */}
             {/* <h1>{"Count: " + scannedDevices.length}</h1> */}
-            {!app.device.paired?<button disabled={scanning} onClick={()=>scan()} id="scan">{scanning?"Scanning...":"Scan for devices"}</button>:""}
+            {!app.app.device.paired?<button disabled={scanning} onClick={()=>scan()} id="scan">{scanning?"Scanning...":"Scan for devices"}</button>:""}
             {
                 scanning?
                 <div className="found-devices">
@@ -93,9 +99,9 @@ function BLEScan(props) {
                         {
                             scannedDevices.map((device,index)=>{
                                 return(
-                                    <div onClick={()=>Android.connect(device.address)} key={device.address + index} id={device.address} class="found-device ">
+                                    <div onClick={()=>Android.connect(device.address)} key={device.address + index} id={device.address} className="found-device ">
                                         <div class="found-device-img">
-                                            <img width="100%" src={sensorimg} alt="" />
+                                            <img width="100%" src={logo} alt="" />
                                         </div>
                                         <div class="found-device-info">
                                             <p>{`Name: ${device.name}`}</p>
@@ -111,18 +117,18 @@ function BLEScan(props) {
                 :""
             }
             {
-                app.device.paired?
+                app.app.device.paired?
                 <div className="paired-device">
                     <h5 className="paired-device-title">Paired Device:</h5>
                     <div className="paired-device">
                         {
                             <div class="found-device">
                                 <div class="found-device-img">
-                                    <img width="100%" src={sensorimg} alt="" />
+                                    <img width="100%" src={logo} alt="" />
                                 </div>
                                 <div class="found-device-info">
-                                    <p>{`Name: ${app.device.name}`}</p>
-                                    <p>{`Address: ${app.device.address}`}</p>
+                                    <p>{`Name: ${app.app.device.name}`}</p>
+                                    <p>{`Address: ${app.app.device.address}`}</p>
                                     {/* <p>{`Type: ${app.device.type}`}</p> */}
                                 </div>
                             </div>
@@ -132,16 +138,11 @@ function BLEScan(props) {
                 :""
             }
             {
-                app.device.paired?
+                app.app.device.paired?
                 <button onClick={disconnect} className="btn--disconnectDevice">Disconnect</button>
                 :""
             }
-            <div className="application-info">
-                <p>Application Name: Ligo Scanner</p>
-                <p>Company name: Ligo.ai</p>
-                <p>Application Version: 1.0.0</p>
-                <p>Release Type: Alpha</p>
-            </div>
+            
             
         </div>
     )

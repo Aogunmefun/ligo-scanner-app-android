@@ -8,9 +8,20 @@ function SideNav(props) {
 
     return(
         <div className={`sidenav ${props.open?"sidenavOpen":""}`}>
-            <button onClick={()=>navigate("/configure")} className="btn--sidenav">Configuration</button>
-            <button onClick={()=>navigate("/scan")} className="btn--sidenav">Scan</button>
-            <button onClick={()=>navigate("/blescan")} className="btn--sidenav">Pair Device</button>
+            {/* <button onClick={()=>{
+                props.setOpen(false)
+                navigate("/configure")
+                
+            }} className="btn--sidenav">Configuration</button> */}
+            
+            <button onClick={()=>{
+                props.setOpen(false)
+                navigate("/devices")
+            }} className="btn--sidenav">Devices</button>
+            <button onClick={()=>{
+                props.setOpen(false)
+                navigate("/scan")
+            }} className="btn--sidenav">Measurements</button>
         </div>
     )
 }

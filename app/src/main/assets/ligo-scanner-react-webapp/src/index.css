@@ -49,6 +49,15 @@ button, input[type="submit"] {
     width: 80%;
 }
 
+.btn--flat {
+    background-color: transparent;
+    border: none;
+    border-radius: 0;
+    /* border-bottom: 1px solid var(--gray); */
+    box-shadow: none;
+    color: var(--black);
+}
+
 input[type="text"], input[type="number"] {
     display: flex;
     flex-direction: column;

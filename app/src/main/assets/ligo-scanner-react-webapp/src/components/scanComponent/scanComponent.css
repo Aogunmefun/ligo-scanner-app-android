@@ -39,6 +39,7 @@
 }
 .holeScan > h5 {
     font-weight: 100;
+    font-size: 1rem;
 }
 
 .holeScanColor { 
@@ -54,6 +55,13 @@
 
 .holeScan > input {
     width: 50%;
+}
+
+.holeScan > form {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 10px;
 }
 
 .btn--editDepth {

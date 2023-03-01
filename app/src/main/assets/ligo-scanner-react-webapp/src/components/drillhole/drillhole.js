@@ -6,13 +6,18 @@ import ScanComponent from "../scanComponent/scanComponent";
 function DrillHole(props) {
 
     const [editinfo, setEditInfo] = useState(false)
-    const [name, setName] = useState("")
-    const [interval, setInterval] = useState(0)
+    const [editdepth, setEditDepth] = useState(false)
+    
+    const [startdepth, setStartDepth] = useState("")
+    const [interval, setInterval] = useState("")
+    
+    const [expanded, setExpanded] = useState(true)
+    const [page, setPage] = useState(true)
     
     useEffect(()=>{
         console.log(props.hole)
         
-        if (name==="" && interval===0) {
+        if (!editinfo) {
             window.scroll({
                 top: document.querySelector(".drillhole").scrollHeight,
                 left:0,
@@ -20,11 +25,9 @@ function DrillHole(props) {
             })
         }
         
-    })
+    }, [props.scanning, props.hole])
 
-    const changeName = (ev)=>{
-        setName(ev.target.value)
-    }
+    
     const changeInterval = (ev)=>{
         setInterval(ev.target.value)
     }
@@ -33,26 +36,51 @@ function DrillHole(props) {
         if (!editinfo) setEditInfo(true)
         else{
             setEditInfo(false)
-            props.handleEditHole(name===""?props.hole.config.name:name, interval===0?props.hole.config.interval:parseInt(interval))
-            setName("")
-            setInterval(0)
+            props.handleEditHole(
+                props.hole.config.name, 
+                !interval?props.hole.config.interval:parseInt(interval),
+                props.index
+            )
+            setInterval("")
             
         }
     }
 
-    const handleExpand = (el)=> {
-        console.log(el.currentTarget.parentElement.style.height)
-        el.currentTarget.parentElement.style.height = el.currentTarget.parentElement.style.height==="fit-content"?"150px":"fit-content"
-        window.scroll({
-            top: document.querySelector(".drillhole").scrollHeight,
-            left:0,
-            behavior: 'smooth'
-        })
+    const handleChangeStartDepth = ()=>{
+        if (!editdepth) setEditDepth(true)
+        else{
+            setEditDepth(false)
+            props.changeStartDepth(
+                !startdepth?props.hole.config.start:parseInt(startdepth),
+                props.index
+            )
+            setStartDepth("")
+            
+        }
+    }
+
+    const handleChangeVelocity = (mydepth, myvelocity, myindex)=>{
+        setEditVelocity(false)
+        if ((parseInt(velocityDepth) === props.hole.velocity[index].depth)||!velocityDepth) {
+            return
+        }
+        props.changeVelocity(
+            parseInt(velocityDepth),
+            parseInt(velocity),
+            index
+        )
+        setVelocityDepth("")
     }
 
     const changeDepth = (depth, index)=>{
         props.changeDepth(depth, index)
     }
+
+    const changeStartDepth = (ev)=>{
+        setStartDepth(ev.target.value)
+    }
+
+    
     
     const rescan = (index)=>{
         props.rescan(index)
@@ -63,40 +91,112 @@ function DrillHole(props) {
             {
                 props.hole?
                 
-                <div style={{height:"fit-content"}} id={props.hole?.config.name} className="hole">
+                <div style={{height:`${!expanded?"150px":"fit-content"}`}} id={props.hole?.config.name} className="hole">
                     {
-                        editinfo?
-                        <input type="text" placeholder={props.hole?.config.name} value={name} onChange={changeName}  />
-                        :<h5 onClick={handleExpand}>{props.hole?.config.name}<i className="material-icons">expand_more</i></h5>
+                        <h5>
+                            {props.hole?.config.name}
+                            
+                        </h5>
                     }
                     <div className="hole-header">
-                        <div  className="holeinfo">
+                        <div  className="holeinfo--drillhole">
                             
                             {
                                 editinfo?
-                                <input type="number"  placeholder={0} value={interval} onChange={changeInterval}  />
-                                :<h6>{"Interval: " + props.hole?.config.interval + "ft"}</h6>
+                                <div className="drillhole-interval">
+                                    <input type="number"  
+                                        placeholder={props.hole?.config.interval} 
+                                        value={interval} 
+                                        onChange={changeInterval}  
+                                    />
+                                    <button onClick={handleEdit} className="btn--flat">
+                                        {/* {editinfo?"Confirm":"Edit"}  */}
+                                        <i className="material-icons">
+                                            {editinfo?"done":"edit"}
+                                        </i>
+                                    </button>
+                                </div>
+                                :<h6 onClick={handleEdit}>{"Interval: " + props.hole?.config.interval + "ft"}</h6>
                             }
-                            <h6>{"Start Depth: " + props.hole?.config.start + "ft"}</h6>
+                            {
+                                editdepth?
+                                <div className="drillhole-interval">
+                                    <input type="number"  
+                                        placeholder={props.hole?.config.start} 
+                                        value={startdepth} 
+                                        onChange={changeStartDepth}  
+                                    />
+                                    <button onClick={handleChangeStartDepth} className="btn--flat">
+                                        {/* {editinfo?"Confirm":"Edit"}  */}
+                                        <i className="material-icons">
+                                            {editdepth?"done":"edit"}
+                                        </i>
+                                    </button>
+                                </div>
+                                :<h6 onClick={()=>{props.hole?.data.length===0?setEditDepth(!editdepth):""}}>{"Start Depth: " + props.hole?.config.start + "ft"}</h6>
+                            }
                         </div>
                         <div className="holebuttons">
-                            <button onClick={handleEdit} className="btn--editHoleInfo">{editinfo?"Confirm":"Edit"}</button>
-                            <button onClick={props.deleteHole} className="btn--deleteHole">Delete</button>
+                            {/* <button onClick={handleEdit} className="btn--flat">{editinfo?"Confirm":"Edit"} <i className="material-icons">{editinfo?"done":"edit"}</i></button> */}
+                            {/* <button onClick={props.deleteHole} className="btn--deleteHole">Delete</button> */}
                         </div>
                         
                     </div>
                     
-                    <h5>Scans:</h5>
+                    <h5 onClick={()=>setPage(!page)}>{page?"Colors:":"Velocity:"}</h5>
                     {
-                        props.hole?.data.map((scan,index)=>{
-                            return(
-                                <ScanComponent rescan={rescan} changeDepth={changeDepth} key={props.hole.config.name+scan.depth+index} scan={scan} index={index} />
-                            )
-                        })
+                        page?
+                        <>
+                            {
+                                props.hole.data.length > 0?
+                                props.hole?.data.map((scan,index)=>{
+                                    return(
+                                        <ScanComponent 
+                                            rescan={rescan} 
+                                            changeDepth={changeDepth} 
+                                            key={props.hole.config.name+scan.depth+index} 
+                                            scan={scan} 
+                                            index={index} 
+                                            edit={props.editScan}
+                                            setEdit={props.setEditScan}    
+                                        />
+                                    )
+                                })
+                                :<h5 style={{border:"none", textAlign:"center"}}>
+                                    Create new scan by pressing the scan button on the device...
+                                </h5>
+                            }
+                        </>
+                        :
+                        <>
+                            {
+                                props.hole.velocity?.length > 0?
+                                props.hole?.velocity?.map((vel,index)=>{
+                                    return(
+                                        <ScanComponent 
+                                            changeVelocity={props.changeVelocity}
+                                            velocity={true}
+                                            changeDepth={handleChangeVelocity} 
+                                            key={props.hole.config.name+"velocity"+vel.depth} 
+                                            scan={vel} 
+                                            index={index} 
+                                            edit={props.editScan}
+                                            setEdit={props.setEditScan}   
+                                            vel = {vel} 
+                                        />
+                                        
+                                    )
+                                })
+                                :<h5 style={{border:"none", textAlign:"center"}}>
+                                    Click Add to enter new velocity readings...
+                                </h5>
+                            }
+                        </>
                     }
-                    <button onClick={props.handleManualDepth} className="btn--manualDepth">New manual depth</button>
+                    {page?<button onClick={props.handleManualDepth} className="btn--manualDepth">New manual depth</button>:""}
+                    {!page?<button onClick={props.newVelocity} className="btn--manualDepth">New Velocity</button>:""}
                 </div>
-                :""
+                : ""
                 
             }
             <div className="drillhole-end"></div>

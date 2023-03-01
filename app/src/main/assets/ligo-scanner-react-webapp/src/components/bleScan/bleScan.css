@@ -3,19 +3,23 @@
 
 .bleScanPage {
     padding: 20px;
-    padding-top: 50px;
+    /* padding-top: 50px; */
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 20px;
-    height: calc(100vh - var(--navbarHeight));
-    margin-top: var(--navbarHeight);
+    /* height: calc(100vh - var(--navbarHeight)); */
     /* margin-top: var(--navbarHeight); */
+    /* margin-top: var(--navbarHeight); */
+    border-top: 1px solid var(--gray);
+    border-bottom: 1px solid var(--gray);
+    width: 100%;
 }
 
-h1 {
+h1, h2 {
     font-weight: 100;
-}
+    border-bottom: 1px solid var(--gray) ;
+}   
 
 .device-found-title, .paired-device-title {
     font-size: 16px;
@@ -55,6 +59,9 @@ h1 {
 }
 .found-device-img {
     width: 40%;
+    /* background-color: var(--primaryColor); */
+    height: 100%;
+    /* border-radius: 2rem; */
 }
 .found-device-info {
     width: 60%;
@@ -71,21 +78,4 @@ h1 {
     gap: 20px;
 }
 
-.application-info {
-    display: flex;
-    align-items: flex-start;
-    flex-direction: column;
-    position: absolute;
-    bottom: 20px;
-    /* margin-top: 200px; */
-    /* gap: 10px; */
-    border: 1px solid var(--gray);
-    padding: 20px;
-    border-radius: 1rem;
-    /* justify-self:flex-end; */
-}
-.application-info > p {
-    text-align: left;
-    color: var(--gray);
-    /* border-bottom: 1px solid var(--gray); */
-}
+
