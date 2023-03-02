@@ -13,6 +13,12 @@
     position: relative;
 }
 
+.scanPage > h1, .scanPage > h2 {
+    font-weight: 100;
+    text-align: center;
+    padding: 10px;
+}
+
 .scanPageScanning {
     background-color: var(--lightGray);
 }

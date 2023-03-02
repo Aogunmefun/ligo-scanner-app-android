@@ -11,12 +11,12 @@
     /* height: calc(100vh - var(--navbarHeight)); */
     /* margin-top: var(--navbarHeight); */
     /* margin-top: var(--navbarHeight); */
-    border-top: 1px solid var(--gray);
-    border-bottom: 1px solid var(--gray);
+    /* border-top: 1px solid var(--gray); */
+    /* border-bottom: 1px solid var(--gray); */
     width: 100%;
 }
 
-h1, h2 {
+.bleScanPage > h1, .bleScanPage > h2 {
     font-weight: 100;
     border-bottom: 1px solid var(--gray) ;
 }   

@@ -29,7 +29,9 @@ function BLEScan(props) {
     
 
     const handleDeviceFound = (device)=>{
-        
+        if (device.detail.type !== "colorimeter") {
+            return
+        }
         if (scannedDevices.filter((item, index)=>item.address===device.detail.address).length === 0) {
             console.log("deviceFound", device.detail.name, "Address", device.detail.address)
             setScannedDevices([...scannedDevices,{name:device.detail.name, address:device.detail.address}])
@@ -40,11 +42,13 @@ function BLEScan(props) {
         
     }
 
-    const handleConnecting = ()=>{
+    const handleConnecting = (device)=>{
+        if (device.detail.type!=="colorimeter") return
         setConnecting(true)
     }
 
     const handleConnected = (device)=>{
+        if (device.detail.type!=="colorimeter") return
         let temp = app.app
         console.log("Scanned Devices", JSON.stringify(scannedDevices[0]))
         // console.log("Remaining element", JSON.stringify(scannedDevices.filter((storedDevice,index)=>{
@@ -54,6 +58,7 @@ function BLEScan(props) {
         let connectedDevice = scannedDevices.filter((storedDevice,index)=>storedDevice.address===device.detail.address)
         temp.device.name = connectedDevice[0].name
         temp.device.address = connectedDevice[0].address
+        temp.device.active = "colorimeter"
         // app.device.type = connectedDevice[0].type
         temp.device.paired = true
         app.setApp(temp)
@@ -68,6 +73,7 @@ function BLEScan(props) {
         temp.device.address = null
         // app.device.type = null
         temp.device.paired = false
+        temp.device.paired = null
         app.setApp(temp)
         setConnecting(false)
     }

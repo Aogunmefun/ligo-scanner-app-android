@@ -133,7 +133,8 @@ function DrillHole(props) {
                                         </i>
                                     </button>
                                 </div>
-                                :<h6 onClick={()=>{props.hole?.data.length===0?setEditDepth(!editdepth):""}}>{"Start Depth: " + props.hole?.config.start + "ft"}</h6>
+                                :<h6 onClick={()=>{props.hole?.data.length===0?setEditDepth(!editdepth):""}}>
+                                    {"Start Depth: " + props.hole?.config.start + "ft"}</h6>
                             }
                         </div>
                         <div className="holebuttons">

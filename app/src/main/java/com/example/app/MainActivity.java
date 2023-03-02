@@ -7,6 +7,10 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothManager;
+import android.bluetooth.le.BluetoothLeScanner;
+import android.bluetooth.le.ScanCallback;
+import android.bluetooth.le.ScanResult;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -45,6 +49,9 @@ import androidx.appcompat.widget.SwitchCompat;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.mbientlab.metawear.Route;
+import com.mbientlab.metawear.data.Quaternion;
+import com.mbientlab.metawear.module.SensorFusionBosch;
 import com.nix.nixsensor_lib.IDeviceListener;
 import com.nix.nixsensor_lib.NixDevice;
 import com.nix.nixsensor_lib.NixDeviceCommon;
@@ -64,14 +71,34 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
 
+import android.app.ProgressDialog;
+import android.bluetooth.BluetoothDevice;
+import android.content.ComponentName;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.ServiceConnection;
+import android.os.IBinder;
+//import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
 
-public class MainActivity extends AppCompatActivity {
+//import com.mbientlab.bletoolbox.scanner.BleScannerFragment;
+import com.mbientlab.metawear.MetaWearBoard;
+import com.mbientlab.metawear.android.BtleService;
+
+import java.util.UUID;
+
+import bolts.Continuation;
+import bolts.Task;
+
+
+public class MainActivity extends AppCompatActivity implements ServiceConnection {
 
     private static final String TAG = com.example.app.MainActivity.class.getSimpleName();
     private static final int PERMISSION_REQUEST_BLUETOOTH = 1000;
     private NixDevice sensor;
     private ArrayList<NixScannedColor> mScannedColors;
     private ArrayList<BluetoothDevice> deviceslist = new ArrayList<BluetoothDevice>();
+    private ArrayList<BluetoothDevice> imulist = new ArrayList<BluetoothDevice>();
     private Boolean checkAmbient = true;
     private Boolean hapticEnabled = true;
     private boolean mTemperatureCompensationEnabled;
@@ -103,6 +130,15 @@ public class MainActivity extends AppCompatActivity {
             "D65/10°",
             "D75/2°",
             "D75/10°"};
+
+//    private BluetoothManager blemanager = getSystemService(BluetoothManager.class);
+        private BluetoothAdapter bleadapter = null;
+    private BluetoothLeScanner blescanner = null;
+    private boolean scanning = false;
+    private static final long scanDuration = 10000;
+    private MetaWearBoard imu;
+    private BtleService.LocalBinder serviceBinder;
+
     private WebView webView;
 
     @Override
@@ -139,6 +175,12 @@ public class MainActivity extends AppCompatActivity {
                 !isBluetoothPermissionGranted(this))
             requestBluetoothPermissions(this);
 
+        getApplicationContext().bindService(new Intent(this, BtleService.class),
+                this, Context.BIND_AUTO_CREATE);
+
+        final BluetoothManager blemanager = getSystemService(BluetoothManager.class);
+        bleadapter = blemanager.getAdapter();
+        blescanner = bleadapter.getBluetoothLeScanner();
 
     }
 
@@ -178,13 +220,10 @@ public class MainActivity extends AppCompatActivity {
                 if (deviceName == null)
                     deviceName = NixDeviceScanner.parseAdvertisementDataToName(scanRecord);
                 if (NixDeviceCommon.DeviceType.findByAdvertisingName(deviceName) ==
-                        NixDeviceCommon.DeviceType.spectro2)
-                {
+                        NixDeviceCommon.DeviceType.spectro2) {
                     // This is a spectrophotometer type device
                     // ...
-                }
-                else
-                {
+                } else {
                     // This is a colorimeter type device
                     // ...
                     String finalDeviceName = deviceName;
@@ -192,8 +231,7 @@ public class MainActivity extends AppCompatActivity {
                     webView.post(new Runnable() {
                         @Override
                         public void run() {
-//                            webView.loadUrl("javascript:newDevice('"+finalDeviceName+","+"Colorimeter"+","+finalDeviceAdd+"')");
-                            webView.evaluateJavascript("window.dispatchEvent(new CustomEvent('deviceFound', {detail:{name:'" + "Colorimeter" + "',address:'" + finalDeviceAdd + "'}}))", null);
+                            webView.evaluateJavascript("window.dispatchEvent(new CustomEvent('deviceFound', {detail:{name:'" + "Colorimeter" + "',address:'" + finalDeviceAdd + "', type:'"+"colorimeter"+"'}}))", null);
                         }
                     });
                 }
@@ -206,12 +244,11 @@ public class MainActivity extends AppCompatActivity {
     public void isDeviceConnected() {
         if (sensor == null) {
 
-        }
-        else {
+        } else {
             webView.post(new Runnable() {
                 @Override
                 public void run() {
-                    webView.evaluateJavascript("window.dispatchEvent(new CustomEvent('connected', {detail:{name:'"+sensor.getName()+"',address:'"+sensor.getAddress()+"'}}))", null);
+                    webView.evaluateJavascript("window.dispatchEvent(new CustomEvent('connected', {detail:{name:'" + sensor.getName() + "',address:'" + sensor.getAddress() + "'}}))", null);
                 }
             });
 
@@ -225,11 +262,11 @@ public class MainActivity extends AppCompatActivity {
         BluetoothDevice device;
         Log.d("Address", address);
         Log.d("array size", String.valueOf(deviceslist.size()));
-        for (int i=0; i < deviceslist.size(); i++) {
+        for (int i = 0; i < deviceslist.size(); i++) {
 
 
             if (address.equals(deviceslist.get(i).getAddress())) {
-                Log.d("address",deviceslist.get(i).getAddress()+", "+String.valueOf(i));
+                Log.d("address", deviceslist.get(i).getAddress() + ", " + String.valueOf(i));
                 device = deviceslist.get(i);
                 sensor = new NixDevice(getBaseContext(), device, sensorCallback);
                 break;
@@ -251,18 +288,18 @@ public class MainActivity extends AppCompatActivity {
             webView.post(new Runnable() {
                 @Override
                 public void run() {
-                    webView.evaluateJavascript("window.dispatchEvent(new CustomEvent('connecting'))",null);
+                    webView.evaluateJavascript("window.dispatchEvent(new CustomEvent('connecting'))", null);
                 }
             });
         }
 
         @Override
         public void onDeviceReady() {
-            Log.d("DeviceReady","Device Ready");
+            Log.d("DeviceReady", "Device Ready");
             webView.post(new Runnable() {
                 @Override
                 public void run() {
-                    webView.evaluateJavascript("window.dispatchEvent(new CustomEvent('connected', {detail:{address:'"+sensor.getAddress()+"'}}))", null);
+                    webView.evaluateJavascript("window.dispatchEvent(new CustomEvent('connected', {detail:{address:'" + sensor.getAddress() + "'}}))", null);
                 }
             });
 
@@ -279,7 +316,7 @@ public class MainActivity extends AppCompatActivity {
                 public void run() {
 //                    webView.loadUrl("javascript:value('"+ String.valueOf(scanRgb[0])+","+ String.valueOf(scanRgb[1])+","+ Strirg.valueOf(scanRgb[2])+"')");
 //                    webView.evaluateJavascript("window.dispatchEvent(new CustomEvent('scanComplete', {detail:{r:'"+String.valueOf(scanRgb[0])+"',g:'"+String.valueOf(scanRgb[1])+"',b:'"+String.valueOf(scanRgb[2])+"'}}))", null);
-                    webView.evaluateJavascript("window.dispatchEvent(new CustomEvent('scanComplete', {detail:{r:'"+String.valueOf(scanRgb[0])+"',g:'"+String.valueOf(scanRgb[1])+"',b:'"+String.valueOf(scanRgb[2])+"'}}))", null);
+                    webView.evaluateJavascript("window.dispatchEvent(new CustomEvent('scanComplete', {detail:{r:'" + String.valueOf(scanRgb[0]) + "',g:'" + String.valueOf(scanRgb[1]) + "',b:'" + String.valueOf(scanRgb[2]) + "'}}))", null);
                     Log.d("Scan Value", "Value: " + Arrays.toString(scanRgb));
                 }
             });
@@ -293,7 +330,7 @@ public class MainActivity extends AppCompatActivity {
             webView.post(new Runnable() {
                 @Override
                 public void run() {
-                    webView.evaluateJavascript("window.dispatchEvent(new CustomEvent('disconnected'))",null);
+                    webView.evaluateJavascript("window.dispatchEvent(new CustomEvent('disconnected'))", null);
                 }
             });
         }
@@ -339,7 +376,7 @@ public class MainActivity extends AppCompatActivity {
                 webView.post(new Runnable() {
                     @Override
                     public void run() {
-                        webView.evaluateJavascript("window.dispatchEvent(new CustomEvent('scanning'))",null);
+                        webView.evaluateJavascript("window.dispatchEvent(new CustomEvent('scanning'))", null);
                     }
                 });
                 scanColor();
@@ -350,6 +387,121 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return false;
+    }
+
+    @JavascriptInterface
+    public void stopBLEScan() {
+        scanning = false;
+    }
+
+    //    IMU Orientation device
+    @JavascriptInterface
+    public void orientationScan() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_SCAN) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        blescanner.startScan(new ScanCallback() {
+            @Override
+            public void onScanResult(int callbackType, ScanResult result) {
+                scanning = true;
+                super.onScanResult(callbackType, result);
+                if (ActivityCompat.checkSelfPermission(getBaseContext(), Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+                    // TODO: Consider calling
+                    //    ActivityCompat#requestPermissions
+                    // here to request the missing permissions, and then overriding
+                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                    //                                          int[] grantResults)
+                    // to handle the case where the user grants the permission. See the documentation
+                    // for ActivityCompat#requestPermissions for more details.
+                    return;
+                }
+                if (String.valueOf(result.getDevice().getName()).equals("MetaWear") && scanning) {
+                    Log.d("scanning", String.valueOf(result.getDevice().getName()));
+                    imulist.add(result.getDevice());
+                    webView.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            webView.evaluateJavascript("window.dispatchEvent(new CustomEvent('deviceFound', {detail:{name:'" + "Orientation" + "',address:'" + result.getDevice().getAddress() + "', type:'"+"orientation"+"'}}))", null);
+                        }
+                    });
+                }
+
+            }
+        });
+    }
+
+    @JavascriptInterface
+    public void orientationConnect(String address) {
+        final BluetoothDevice device = bleadapter.getRemoteDevice(address);
+        Log.d("Address", address);
+        Log.d("array size", String.valueOf(imulist.size()));
+//        for (int i = 0; i < imulist.size(); i++) {
+//
+//
+//            if (address.equals(imulist.get(i).getAddress())) {
+//                Log.d("address", imulist.get(i).getAddress() + ", " + String.valueOf(i));
+//
+//                break;
+//            }
+//        }
+        webView.post(new Runnable() {
+            @Override
+            public void run() {
+                webView.evaluateJavascript("window.dispatchEvent(new CustomEvent('connecting', {detail:{address:'" + device.getAddress() + "', type:'" + "orientation" + "'}}))", null);
+            }
+        });
+
+        imu = serviceBinder.getMetaWearBoard(device);
+        imu.connectAsync().continueWith(new Continuation<Void, Object>() {
+            @Override
+            public Void then(Task<Void> task) throws Exception {
+                if (task.isFaulted()) {
+                    Log.d("failed connect", "Failed IMU connection");
+                }
+                else {
+                    webView.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            webView.evaluateJavascript("window.dispatchEvent(new CustomEvent('connected', {detail:{address:'" + device.getAddress() + "', type:'" + "orientation" + "'}}))", null);
+                        }
+                    });
+                    Log.d("yay", "Connected to IMU");
+                }
+                return null;
+            }
+
+        });
+
+    }
+
+    @JavascriptInterface
+    public void getangles() {
+        final SensorFusionBosch sensorFusion = imu.getModule(SensorFusionBosch.class);
+        sensorFusion.configure()
+                .mode(SensorFusionBosch.Mode.NDOF)
+                .accRange(SensorFusionBosch.AccRange.AR_2G)
+                .gyroRange(SensorFusionBosch.GyroRange.GR_250DPS)
+                .commit();
+        sensorFusion.quaternion().addRouteAsync(source -> source.limit(33).stream((data, env) -> {
+            Log.d("quarternions", data.value(Quaternion.class).toString());
+            webView.post(new Runnable() {
+                @Override
+                public void run() {
+                    webView.evaluateJavascript("window.dispatchEvent(new CustomEvent('angles', {detail:{w:'" + data.value(Quaternion.class).w() + "', x:'" + data.value(Quaternion.class).x() + "', y:'" + data.value(Quaternion.class).y() + "', z:'" + data.value(Quaternion.class).z() + "'}}))", null);
+                }
+            });
+        })).continueWith((Continuation<Route, Void>) ignored -> {
+            sensorFusion.quaternion().start();
+            sensorFusion.start();
+            return null;
+        });
     }
 
     private static String[] requiredBluetoothPermissions() {
@@ -377,4 +529,13 @@ public class MainActivity extends AppCompatActivity {
         ActivityCompat.requestPermissions(activity, requiredBluetoothPermissions(), PERMISSION_REQUEST_BLUETOOTH);
     }
 
+    @Override
+    public void onServiceConnected(ComponentName name, IBinder service) {
+        serviceBinder = (BtleService.LocalBinder) service;
+    }
+
+    @Override
+    public void onServiceDisconnected(ComponentName name) {
+
+    }
 }

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import "./scanPage.css"
 import Loader from "../../components/loader/loader";
 import DrillHoleConfig from "../../components/drillholeConfig/drillholeConfig";
@@ -22,8 +23,11 @@ function ScanPage(props) {
     const [editScan, setEditScan] = useState(false)
     const [modal, setModal] = useState({state:false, text:""})
     const app = useContext(Session)
+
+    let navigate = useNavigate()
     
     useEffect(()=>{
+        if(app.app.device.active === "orientation") navigate("/orientation")
         window.addEventListener("scanComplete", handleScanComplete)
         window.addEventListener("scanning", handleScanning)
         
@@ -33,6 +37,7 @@ function ScanPage(props) {
             window.removeEventListener("scanning", handleScanning);
             window.removeEventListener("scanComplete", handleScanComplete);
         }
+        
     },[scanning])
 
     const scanColor = ()=>{
@@ -127,6 +132,12 @@ function ScanPage(props) {
             ],
             velocity: [
 
+            ],
+            orientation: [
+
+            ],
+            laser: [
+                
             ]
         })
         temp.active = app.app.drillholes.length - 1
@@ -277,7 +288,11 @@ function ScanPage(props) {
             backgroundColor:`${create||scanning?"var(--lightGray)":""}`,
             // overflow:`${rescan||manualscan?"hidden":""}`
         }} className="scanPage">
+            
             {
+                app.app.device.active?
+                <>
+                {
                 <div className="scanPageTabs">
                     <button onClick={()=>setScanPageTab(1)} className={`btn--scanPageTabs ${scanpageTab===1?"scanPageTabsActive":""}`}>Active Hole</button>
                     <button onClick={()=>setScanPageTab(2)} className={`btn--scanPageTabs ${scanpageTab===2?"scanPageTabsActive":""}`}>All Drillholes</button>
@@ -305,6 +320,7 @@ function ScanPage(props) {
                     changeStartDepth = {handleChangeStartDepth}
                     newVelocity = {newVelocity}
                     changeVelocity = {handleChangeVelocity}
+                    device = {app.app.device.active}
                 />
                 :<>
                     {
@@ -317,7 +333,7 @@ function ScanPage(props) {
                                     hole={drillhole} 
                                     index = {index}
                                     handleEditHole = {handleEditHole}
-                                    
+                                    device = {app.app.device.active}
                                 />
                             )
                         })
@@ -351,6 +367,12 @@ function ScanPage(props) {
                 </div>
                 
             </div> */}
+                </>
+                :<>
+                    <h2>No Devices currently connected</h2>
+                    <button onClick={()=>navigate("/devices")}>Connect a device</button>
+                </>
+            }
         </div>
     )
 }

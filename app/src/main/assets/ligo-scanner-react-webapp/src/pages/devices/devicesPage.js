@@ -6,21 +6,24 @@ import OrientationDevice from "../../components/orientationDevice/orientationDev
 import { Session } from "../../app";
 
 function DevicesPage() {
-    
-    const [device, setDevice] = useState(null)
-
     const app = useContext(Session)
 
+
+    
+
     const changeDevice = (dev)=>{
-        
+        let temp = app.app
+        temp.device.active = dev
+        app.setApp({...temp})
     }
 
     return(
         <div className="devicesPage">
             <h1>Devices</h1>
-            <BLEScan />
-            <VelocityDevice />
-            <OrientationDevice />
+            <BLEScan paired={app.app.device.paired} device={app.app.device.active} changeDevice={changeDevice} />
+            <VelocityDevice paired={app.app.device.paired} device={app.app.device.active} changeDevice={changeDevice} />
+            <OrientationDevice paired={app.app.device.paired} device={app.app.device.active} changeDevice={changeDevice} />
+            
             <div className="application-info">
                 <p>Application Name: Ligo Scanner</p>
                 <p>Company name: Ligo.ai</p>
