@@ -1,56 +1,45 @@
 package com.example.app;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.Manifest;
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
 import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanResult;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
-import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
+import android.os.IBinder;
 import android.os.Vibrator;
-import android.text.Layout;
-import android.text.Spannable;
-import android.text.SpannableString;
-import android.text.style.AlignmentSpan;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
 import android.webkit.ConsoleMessage;
 import android.webkit.JavascriptInterface;
 import android.webkit.PermissionRequest;
-import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
+import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.mbientlab.metawear.MetaWearBoard;
 import com.mbientlab.metawear.Route;
+import com.mbientlab.metawear.android.BtleService;
 import com.mbientlab.metawear.data.Quaternion;
 import com.mbientlab.metawear.module.SensorFusionBosch;
 import com.nix.nixsensor_lib.IDeviceListener;
@@ -60,38 +49,20 @@ import com.nix.nixsensor_lib.NixDeviceScanner;
 import com.nix.nixsensor_lib.NixScannedColor;
 import com.nix.nixsensor_lib.NixScannedSpectralData;
 
-import android.webkit.WebView;
-
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Locale;
-import java.util.Objects;
-import java.util.Set;
-
-import android.app.ProgressDialog;
-import android.bluetooth.BluetoothDevice;
-import android.content.ComponentName;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.ServiceConnection;
-import android.os.IBinder;
-//import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-
-//import com.mbientlab.bletoolbox.scanner.BleScannerFragment;
-import com.mbientlab.metawear.MetaWearBoard;
-import com.mbientlab.metawear.android.BtleService;
-//import com.mbientlab.metawear.module.Gpio;
-
-import java.util.UUID;
 
 import bolts.Continuation;
 import bolts.Task;
 
+//import android.support.v7.app.AppCompatActivity;
+//import com.mbientlab.bletoolbox.scanner.BleScannerFragment;
+//import com.mbientlab.metawear.module.Gpio;
+
+import org.opencv.core.Core;
+import org.opencv.core.Mat;
+import org.opencv.imgcodecs.Imgcodecs;
+import org.opencv.imgproc.Imgproc;
 
 public class MainActivity extends AppCompatActivity implements ServiceConnection {
 
@@ -199,7 +170,12 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
 
         });
 
+//        System.loadLibrary( Core.NATIVE_LIBRARY_NAME )/;
+
+
+
     }
+
 
 
     @JavascriptInterface
@@ -541,6 +517,17 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
             sensorFusion.start();
             return null;
         });
+    }
+
+//    Laser Device
+
+    @JavascriptInterface
+    public void maskImg() {
+        Imgcodecs cv2 = new Imgcodecs();
+        Mat img = cv2.imread("C:/Users/deolu/OneDrive/Documents/ligo-scanner-app-android/ImageProcessing/roughness/IMG_1190.JPEG");
+        Mat imghsv = new Mat();
+        Imgproc.cvtColor(img, imghsv, Imgproc.COLOR_BGR2HSV);
+        cv2.imwrite("C:/Users/deolu/OneDrive/Documents/ligo-scanner-app-android/ImageProcessing/roughness/test.jpg", imghsv);
     }
 
     private static String[] requiredBluetoothPermissions() {
