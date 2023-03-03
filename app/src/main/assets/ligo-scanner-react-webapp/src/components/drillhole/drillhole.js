@@ -144,9 +144,9 @@ function DrillHole(props) {
                         
                     </div>
                     
-                    <h5 onClick={()=>setPage(!page)}>{page?"Colors:":"Velocity:"}</h5>
+                    <h5>{props.device==="colorimeter"?"Colors:":"Velocity:"}</h5>
                     {
-                        page?
+                        props.device==="colorimeter"?
                         <>
                             {
                                 props.hole.data.length > 0?
@@ -194,8 +194,8 @@ function DrillHole(props) {
                             }
                         </>
                     }
-                    {page?<button onClick={props.handleManualDepth} className="btn--manualDepth">New manual depth</button>:""}
-                    {!page?<button onClick={props.newVelocity} className="btn--manualDepth">New Velocity</button>:""}
+                    {props.device==="colorimeter"?<button onClick={props.handleManualDepth} className="btn--manualDepth">New manual depth</button>:""}
+                    {props.device!=="colorimeter"?<button onClick={props.newVelocity} className="btn--manualDepth">New Velocity</button>:""}
                 </div>
                 : ""
                 

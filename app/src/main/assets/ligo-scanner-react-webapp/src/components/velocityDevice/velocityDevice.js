@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect } from "react";
 import "./velocityDevice.css"
 import { Session } from "../../app";
-
+import logo from "./strength.png"
 
 function VelocityDevice(props) {
 
@@ -32,7 +32,7 @@ function VelocityDevice(props) {
 
     return(
         <div className="velocityDevice">
-            <h2>Ultrasonic</h2>
+            <img src={logo} width="40%" alt="" />
             <button onClick={changeDevice} className="btn--velocityDeviceConnect">{active?"Disconnect":"Make Active"}</button>
         </div>
     )

@@ -5,6 +5,7 @@ import ConfigurePage from "./pages/configure/configurePage";
 import Navbar from "./components/navbar/navbar";
 import ScanPage from "./pages/scan/scanPage";
 import DevicesPage from "./pages/devices/devicesPage";
+import ImuPage from "./pages/imu/imuPage";
 
 export const Session = createContext()
 
@@ -161,6 +162,7 @@ function App(props) {
                     <Route path="/configure" element={<ConfigurePage/>} />
                     <Route path="/devices" element={<DevicesPage />} />
                     <Route path="/scan" element={<ScanPage />} />
+                    <Route path="/orientation" element={<ImuPage />} />
                     
                 </Routes>
             </Session.Provider>

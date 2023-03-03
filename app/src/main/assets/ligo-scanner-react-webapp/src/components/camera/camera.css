@@ -1,0 +1,16 @@
+@import url("../../index.css");
+
+
+.camera {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* height: 100vh; */
+    min-height: 500px;
+}
+
+.camera > video {
+    visibility:hidden;
+    height: 5px;
+}

@@ -85,9 +85,9 @@ function DrillHoles(props) {
                     </div>
                     
                     
-                    <h5 onClick={()=>setPage(!page)}>{page?"Colors:":"Velocity:"}</h5>
+                    <h5>{props.device==="colorimeter"?"Colors:":"Velocity:"}</h5>
                     {
-                        page?
+                        props.device==="colorimeter"?
                         props.hole.data.map((scan,index)=>{
                             return(
                                 <div key={scan.depth+index} className="holeScan">

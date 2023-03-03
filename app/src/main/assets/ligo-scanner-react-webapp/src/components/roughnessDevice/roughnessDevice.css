@@ -1,0 +1,13 @@
+@import url("../../index.css");
+
+
+.roughnessDevice {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    /* border-top: 1px solid var(--gray); */
+    /* border-bottom: 1px solid var(--gray); */
+    width: 100%;
+    padding: 20px;
+}

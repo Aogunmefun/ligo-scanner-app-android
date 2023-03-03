@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import "./threeScene.css"
 import * as THREE from "three"
 import { MTLLoader, OBJLoader } from "three-obj-mtl-loader";
+import dice from "./dice.jpg"
 
 
 class ThreeScene extends Component {
@@ -58,7 +59,7 @@ class ThreeScene extends Component {
       // -----Step 2--------
       //LOAD TEXTURE and on completion apply it on SPHERE
       new THREE.TextureLoader().load(
-        "https://images.pexels.com/photos/1089438/pexels-photo-1089438.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260",
+        {dice},
         (texture) => {
           //Update Texture
           this.cube.material.map = texture;
@@ -70,9 +71,32 @@ class ThreeScene extends Component {
         },
         (error) => {
           //Error CallBack
-          console.log("An error happened" + error);
+          console.log("An error happened", error);
         }
       );
+      // const loader = new THREE.ImageLoader();
+      // loader.load(
+      //   // resource URL
+      //   {dice},
+      
+      //   // onLoad callback
+      //   ( image )=> {
+      //     // use the image, e.g. draw part of it on a canvas
+      //     // const canvas = document.createElement( 'canvas' );
+      //     // const context = canvas.getContext( '2d' );
+      //     // context.drawImage( image, 100, 100 );
+      //     this.cube.material.map = image;
+      //     this.cube.material.needsUpdate = true;
+      //   },
+      
+      //   // onProgress callback currently not supported
+      //   undefined,
+      
+      //   // onError callback
+      //   (e)=> {
+      //     console.error( 'An error happened.', e );
+      //   }
+      // );
   
       // -----Step 4--------
       //Loading 3d Models

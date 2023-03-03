@@ -31,6 +31,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.webkit.ConsoleMessage;
 import android.webkit.JavascriptInterface;
+import android.webkit.PermissionRequest;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
@@ -84,6 +85,7 @@ import android.os.Bundle;
 //import com.mbientlab.bletoolbox.scanner.BleScannerFragment;
 import com.mbientlab.metawear.MetaWearBoard;
 import com.mbientlab.metawear.android.BtleService;
+//import com.mbientlab.metawear.module.Gpio;
 
 import java.util.UUID;
 
@@ -182,6 +184,21 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         bleadapter = blemanager.getAdapter();
         blescanner = bleadapter.getBluetoothLeScanner();
 
+//        webView.getSettings().setPluginState(WebSettings.PluginState.ON);
+        webView.getSettings().setMediaPlaybackRequiresUserGesture(false);
+
+
+        webView.setWebChromeClient(new WebChromeClient() {
+
+            @Override
+            public void onPermissionRequest(final PermissionRequest request) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    request.grant(request.getResources());
+                }
+            }
+
+        });
+
     }
 
 
@@ -231,7 +248,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                     webView.post(new Runnable() {
                         @Override
                         public void run() {
-                            webView.evaluateJavascript("window.dispatchEvent(new CustomEvent('deviceFound', {detail:{name:'" + "Colorimeter" + "',address:'" + finalDeviceAdd + "', type:'"+"colorimeter"+"'}}))", null);
+                            webView.evaluateJavascript("window.dispatchEvent(new CustomEvent('colorimeterDeviceFound', {detail:{name:'" + "Colorimeter" + "',address:'" + finalDeviceAdd + "', type:'"+"colorimeter"+"'}}))", null);
                         }
                     });
                 }
@@ -248,7 +265,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
             webView.post(new Runnable() {
                 @Override
                 public void run() {
-                    webView.evaluateJavascript("window.dispatchEvent(new CustomEvent('connected', {detail:{name:'" + sensor.getName() + "',address:'" + sensor.getAddress() + "'}}))", null);
+                    webView.evaluateJavascript("window.dispatchEvent(new CustomEvent('colorimeterConnected', {detail:{name:'" + sensor.getName() + "',address:'" + sensor.getAddress() + "'}}))", null);
                 }
             });
 
@@ -288,7 +305,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
             webView.post(new Runnable() {
                 @Override
                 public void run() {
-                    webView.evaluateJavascript("window.dispatchEvent(new CustomEvent('connecting'))", null);
+                    webView.evaluateJavascript("window.dispatchEvent(new CustomEvent('colorimeterConnecting'))", null);
                 }
             });
         }
@@ -299,7 +316,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
             webView.post(new Runnable() {
                 @Override
                 public void run() {
-                    webView.evaluateJavascript("window.dispatchEvent(new CustomEvent('connected', {detail:{address:'" + sensor.getAddress() + "'}}))", null);
+                    webView.evaluateJavascript("window.dispatchEvent(new CustomEvent('colorimeterConnected', {detail:{address:'" + sensor.getAddress() + "'}}))", null);
                 }
             });
 
@@ -330,7 +347,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
             webView.post(new Runnable() {
                 @Override
                 public void run() {
-                    webView.evaluateJavascript("window.dispatchEvent(new CustomEvent('disconnected'))", null);
+                    webView.evaluateJavascript("window.dispatchEvent(new CustomEvent('colorimeterDisconnected'))", null);
                 }
             });
         }
@@ -428,7 +445,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                     webView.post(new Runnable() {
                         @Override
                         public void run() {
-                            webView.evaluateJavascript("window.dispatchEvent(new CustomEvent('deviceFound', {detail:{name:'" + "Orientation" + "',address:'" + result.getDevice().getAddress() + "', type:'"+"orientation"+"'}}))", null);
+                            webView.evaluateJavascript("window.dispatchEvent(new CustomEvent('orientationDeviceFound', {detail:{name:'" + "Orientation" + "',address:'" + result.getDevice().getAddress() + "', type:'"+"orientation"+"'}}))", null);
                         }
                     });
                 }
@@ -454,7 +471,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         webView.post(new Runnable() {
             @Override
             public void run() {
-                webView.evaluateJavascript("window.dispatchEvent(new CustomEvent('connecting', {detail:{address:'" + device.getAddress() + "', type:'" + "orientation" + "'}}))", null);
+                webView.evaluateJavascript("window.dispatchEvent(new CustomEvent('orientationConnecting', {detail:{address:'" + device.getAddress() + "', type:'" + "orientation" + "'}}))", null);
             }
         });
 
@@ -463,13 +480,19 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
             @Override
             public Void then(Task<Void> task) throws Exception {
                 if (task.isFaulted()) {
+                    webView.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            webView.evaluateJavascript("window.dispatchEvent(new CustomEvent('orientationFailedConnect', {detail:{address:'" + device.getAddress() + "', type:'" + "orientation" + "'}}))", null);
+                        }
+                    });
                     Log.d("failed connect", "Failed IMU connection");
                 }
                 else {
                     webView.post(new Runnable() {
                         @Override
                         public void run() {
-                            webView.evaluateJavascript("window.dispatchEvent(new CustomEvent('connected', {detail:{address:'" + device.getAddress() + "', type:'" + "orientation" + "'}}))", null);
+                            webView.evaluateJavascript("window.dispatchEvent(new CustomEvent('orientationConnected', {detail:{address:'" + device.getAddress() + "', type:'" + "orientation" + "'}}))", null);
                         }
                     });
                     Log.d("yay", "Connected to IMU");
@@ -479,6 +502,22 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
 
         });
 
+    }
+
+    @JavascriptInterface
+    public void orientationDisconnect() {
+        imu.disconnectAsync().continueWith(new Continuation<Void, Object>() {
+            @Override
+            public Void then(Task<Void> task) throws Exception {
+                webView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        webView.evaluateJavascript("window.dispatchEvent(new CustomEvent('orientationDisconnect'))", null);
+                    }
+                });
+                return null;
+            }
+        });
     }
 
     @JavascriptInterface

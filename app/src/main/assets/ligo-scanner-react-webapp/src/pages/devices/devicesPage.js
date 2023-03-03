@@ -4,6 +4,7 @@ import BLEScan from "../../components/bleScan/bleScan";
 import VelocityDevice from "../../components/velocityDevice/velocityDevice";
 import OrientationDevice from "../../components/orientationDevice/orientationDevice";
 import { Session } from "../../app";
+import RoughnessDevice from "../../components/roughnessDevice/roughnessDevice";
 
 function DevicesPage() {
     const app = useContext(Session)
@@ -19,10 +20,11 @@ function DevicesPage() {
 
     return(
         <div className="devicesPage">
-            <h1>Devices</h1>
+            {/* <h1>Devices</h1> */}
             <BLEScan paired={app.app.device.paired} device={app.app.device.active} changeDevice={changeDevice} />
             <VelocityDevice paired={app.app.device.paired} device={app.app.device.active} changeDevice={changeDevice} />
             <OrientationDevice paired={app.app.device.paired} device={app.app.device.active} changeDevice={changeDevice} />
+            <RoughnessDevice paired={app.app.device.paired} device={app.app.device.active} changeDevice={changeDevice} />
             
             <div className="application-info">
                 <p>Application Name: Ligo Scanner</p>

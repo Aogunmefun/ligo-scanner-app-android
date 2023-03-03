@@ -10,16 +10,16 @@ function OrientationDevice(props) {
     const [scanning, setScanning] = useState(false)
     const [scannedDevices, setScannedDevices] = useState([])
     const [connecting, setConnecting] = useState(false)
-    const [angles, setAngles] = useState({x:0, y: 0, z:0})
+    
 
     const app = useContext(Session)
 
     useEffect(()=>{
-        window.addEventListener('deviceFound', handleDeviceFound)
-        window.addEventListener('connecting', handleConnecting)
-        window.addEventListener('connected', handleConnected)
-        window.addEventListener('angles', handleAngles)
-        // window.addEventListener('disconnected', handleDisconnected)
+        window.addEventListener('orientationDeviceFound', handleDeviceFound)
+        window.addEventListener('orientationConnecting', handleConnecting)
+        window.addEventListener('orientationConnected', handleConnected)
+        window.addEventListener('orientationDisconnect', handleDisconnected)
+        window.addEventListener('orientationFailedConnect', handleFailedConnect)
     }, [])
 
     const startScan = ()=>{
@@ -35,6 +35,10 @@ function OrientationDevice(props) {
     const handleConnecting = (device)=>{
         if (device.detail.type!=="orientation") return
         setConnecting(true)
+    }
+
+    const handleFailedConnect = (device)=>{
+        setConnecting(false)
     }
 
     const handleConnected = (device)=>{
@@ -57,8 +61,17 @@ function OrientationDevice(props) {
         
     }
 
-    const disconnect = ()=>{
+    const handleDisconnected = ()=>{
+        let temp = app.app
+        temp.device.name = null
+        temp.device.address = null
+        temp.device.active = null
+        temp.device.paired = false
+        app.setApp({...temp})
+    }
 
+    const disconnect = ()=>{
+        Android.orientationDisconnect()
     }
 
     const handleDeviceFound = (device)=>{
@@ -80,15 +93,12 @@ function OrientationDevice(props) {
         
     }
 
-    const handleAngles = (ev)=>{
-        console.log("angles: w:", ev.detail.w, "x:", ev.detail.x, "y:", ev.detail.y, "z:", ev.detail.z)
-        setAngles({x:ev.detail.x, y:ev.detail.y, z:ev.detail.z})
-    }
+    
 
     return(
         <div className="orientationDevice">
             {connecting?<Loader text={props.paired?"Disconnecting...":"Connecting..."} />:""}
-            <h2>Orientation</h2>
+            <h2>Orientations</h2>
             <button onClick={startScan} className="btn--velocityDeviceConnect">{scanning?"Scanning...":"Scan for devices"}</button>
             {
                 scanning?
@@ -140,17 +150,13 @@ function OrientationDevice(props) {
                 props.paired&&props.device==="orientation"?
                 <>
                     <button onClick={disconnect} className="btn--disconnectDevice">Disconnect</button>
-                    <button onClick={()=>Android.getangles()}>GEt values</button>
+                    
                 </>
                 
                 :""
             }
             {scanning?<button onClick={()=>stopScanning()}>Stop Scanning</button>:""}
-            {
-                props.paired&&props.device==="orientation"?
-                <ThreeScene angles={angles} />
-                :""
-            }
+
         </div>
     )
 }

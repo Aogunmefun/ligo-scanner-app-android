@@ -18,10 +18,10 @@ function BLEScan(props) {
     useEffect(()=>{
         
         // window.deviceFound = new CustomEvent('deviceFound', {name: elem})
-        window.addEventListener('deviceFound', handleDeviceFound)
-        window.addEventListener('connecting', handleConnecting)
-        window.addEventListener('connected', handleConnected)
-        window.addEventListener('disconnected', handleDisconnected)
+        window.addEventListener('colorimeterDeviceFound', handleDeviceFound)
+        window.addEventListener('colorimeterConnecting', handleConnecting)
+        window.addEventListener('colorimeterConnected', handleConnected)
+        window.addEventListener('colorimeterDisconnected', handleDisconnected)
         
 
     }, [scannedDevices])
@@ -29,9 +29,6 @@ function BLEScan(props) {
     
 
     const handleDeviceFound = (device)=>{
-        if (device.detail.type !== "colorimeter") {
-            return
-        }
         if (scannedDevices.filter((item, index)=>item.address===device.detail.address).length === 0) {
             console.log("deviceFound", device.detail.name, "Address", device.detail.address)
             setScannedDevices([...scannedDevices,{name:device.detail.name, address:device.detail.address}])
@@ -43,13 +40,13 @@ function BLEScan(props) {
     }
 
     const handleConnecting = (device)=>{
-        if (device.detail.type!=="colorimeter") return
+
         setConnecting(true)
     }
 
     const handleConnected = (device)=>{
-        if (device.detail.type!=="colorimeter") return
         let temp = app.app
+        console.log("blescan", device.detail.type)
         console.log("Scanned Devices", JSON.stringify(scannedDevices[0]))
         // console.log("Remaining element", JSON.stringify(scannedDevices.filter((storedDevice,index)=>{
         //     console.log("Connected Device Address", device.detail.address, "stored address", storedDevice.address)
@@ -72,9 +69,9 @@ function BLEScan(props) {
         temp.device.name = null
         temp.device.address = null
         // app.device.type = null
+        temp.device.active = null
         temp.device.paired = false
-        temp.device.paired = null
-        app.setApp(temp)
+        app.setApp({...temp})
         setConnecting(false)
     }
 
@@ -106,10 +103,10 @@ function BLEScan(props) {
                             scannedDevices.map((device,index)=>{
                                 return(
                                     <div onClick={()=>Android.connect(device.address)} key={device.address + index} id={device.address} className="found-device ">
-                                        <div class="found-device-img">
+                                        <div className="found-device-img">
                                             <img width="100%" src={logo} alt="" />
                                         </div>
-                                        <div class="found-device-info">
+                                        <div className="found-device-info">
                                             <p>{`Name: ${device.name}`}</p>
                                             <p>{`Address: ${device.address}`}</p>
                                             {/* <p>{`Type: ${device.type}`}</p> */}
@@ -123,16 +120,16 @@ function BLEScan(props) {
                 :""
             }
             {
-                app.app.device.paired?
+                app.app.device.paired&&app.app.device.active==="colorimeter"?
                 <div className="paired-device">
                     <h5 className="paired-device-title">Paired Device:</h5>
                     <div className="paired-device">
                         {
-                            <div class="found-device">
-                                <div class="found-device-img">
+                            <div className="found-device">
+                                <div className="found-device-img">
                                     <img width="100%" src={logo} alt="" />
                                 </div>
-                                <div class="found-device-info">
+                                <div className="found-device-info">
                                     <p>{`Name: ${app.app.device.name}`}</p>
                                     <p>{`Address: ${app.app.device.address}`}</p>
                                     {/* <p>{`Type: ${app.device.type}`}</p> */}
