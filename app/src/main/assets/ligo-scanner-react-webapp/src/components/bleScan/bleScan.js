@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { Helmet } from "react-helmet";
 import "./bleScan.css"
 // import sensorimg from "./Nix_Mini2_Face_Amazon.png"
-import logo from "./Ligo-logo 2.png"
+import logo from "./colors.png"
 import Loader from "../../components/loader/loader";
 import { Session } from "../../app";
 
@@ -90,7 +90,7 @@ function BLEScan(props) {
     return(
         <div className="bleScanPage" style={{pointerEvents:`${connecting?"none":""}`}}>
             {connecting?<Loader text={app.app.device.paired?"Disconnecting...":"Connecting..."} />:""}
-            <h2>Colorimeter</h2>
+            <img width="30%" src={logo} alt="" />
             {/* <h1>{!app.app.device.paired?"Pair Device":"Device Paired"}</h1> */}
             {/* <h1>{"Count: " + scannedDevices.length}</h1> */}
             {!app.app.device.paired?<button disabled={scanning} onClick={()=>scan()} id="scan">{scanning?"Scanning...":"Scan for devices"}</button>:""}
@@ -103,9 +103,6 @@ function BLEScan(props) {
                             scannedDevices.map((device,index)=>{
                                 return(
                                     <div onClick={()=>Android.connect(device.address)} key={device.address + index} id={device.address} className="found-device ">
-                                        <div className="found-device-img">
-                                            <img width="100%" src={logo} alt="" />
-                                        </div>
                                         <div className="found-device-info">
                                             <p>{`Name: ${device.name}`}</p>
                                             <p>{`Address: ${device.address}`}</p>
@@ -126,9 +123,7 @@ function BLEScan(props) {
                     <div className="paired-device">
                         {
                             <div className="found-device">
-                                <div className="found-device-img">
-                                    <img width="100%" src={logo} alt="" />
-                                </div>
+
                                 <div className="found-device-info">
                                     <p>{`Name: ${app.app.device.name}`}</p>
                                     <p>{`Address: ${app.app.device.address}`}</p>

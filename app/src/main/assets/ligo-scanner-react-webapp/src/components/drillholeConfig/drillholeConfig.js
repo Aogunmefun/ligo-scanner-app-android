@@ -5,8 +5,8 @@ import "./drillholeConfig.css"
 function DrillHoleConfig(props) {
 
     const [name, setName] = useState("")
-    const [interval, setInterval] = useState(0)
-    const [start, setStart] = useState(0)
+    const [interval, setInterval] = useState("")
+    const [start, setStart] = useState("")
 
     const handleSubmit = (ev)=>{
         ev.preventDefault()

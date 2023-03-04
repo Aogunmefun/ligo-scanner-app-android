@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { Session } from "../../app";
 
 
-function ImuPage() {
+function ImuPage(props) {
     
     const [angles, setAngles] = useState({x:0, y: 0, z:0})
     const [tracking, setTracking] = useState(false)
@@ -16,14 +16,18 @@ function ImuPage() {
     useEffect(()=>{
         if (app.app.device.active !== "orientation") navigate("/scan") 
             
-        
+        // Android.getangles()
         window.addEventListener('angles', handleAngles)
 
     }, [])
 
     const handleAngles = (ev)=>{
-        console.log("angles: w:", ev.detail.w, "x:", ev.detail.x, "y:", ev.detail.y, "z:", ev.detail.z)
+        // console.log("angles: w:", ev.detail.w, "x:", ev.detail.x, "y:", ev.detail.y, "z:", ev.detail.z)
         setAngles({x:ev.detail.x, y:ev.detail.y, z:ev.detail.z})
+    }
+
+    const getAngles = ()=>{
+        props.getAngles(angles)
     }
 
     
@@ -31,7 +35,7 @@ function ImuPage() {
     return(
         <div className="imuPage">
             <h1>IMU</h1>
-            <button onClick={()=>{
+            {/* <button onClick={()=>{
                 if (!tracking){
                     Android.getangles()
                     setTracking(true)
@@ -40,9 +44,11 @@ function ImuPage() {
                     setTracking(false)
                 }
             
-            }}>{!tracking?"Track Orientation":"Tracking..."}</button>
+            }}>{!tracking?"Track Orientation":"Tracking..."}</button> */}
+            <button onClick={getAngles}>Get Angles</button>
+            <button onClick={()=>props.setAngleScan(false)}>Cancel</button>
             <ThreeScene angles={angles} />
-            <h2>Angles:</h2>
+     
         </div>
     )
 }

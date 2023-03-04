@@ -9,7 +9,7 @@ function VelocityDevice(props) {
     const app = useContext(Session)
 
     useEffect(()=>{
-        setActive(props.device==="ultrasonic")
+        setActive(props.device==="velocity")
     })
 
     const changeDevice = ()=>{
@@ -18,7 +18,7 @@ function VelocityDevice(props) {
             setActive(true)
             
             // temp.device.active = "ultrasonic"
-            props.changeDevice("ultrasonic")
+            props.changeDevice("velocity")
             // app.setApp({...temp})
             return
         }

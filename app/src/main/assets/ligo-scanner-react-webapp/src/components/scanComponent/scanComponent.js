@@ -8,6 +8,8 @@ function ScanComponent(props) {
     const [depth, setDepth] = useState("")
     const [editvelocity, setEditVelocity] = useState(false)
     const [velocity, setVelocity] = useState("")
+    const [editrough, setEditRough] = useState(false)
+    const [roughness, setRoughness] = useState("")
     const [velocityDepth, setVelocityDepth] = useState("")
 
     const handleEdit = ()=>{
@@ -31,7 +33,13 @@ function ScanComponent(props) {
         setVelocity(ev.target.value)
     }
 
+    const changeRoughness = (ev)=>{
+        setRoughness(ev.target.value)
+    }
+
     const handleChangeVelocity = ()=>{
+
+        console.log("boo", props.index)
         console.log("yup")
         setEditVelocity(false)
         
@@ -40,7 +48,7 @@ function ScanComponent(props) {
             return
         }
         
-        console.log("boo")
+        console.log("boo", props.index)
         props.changeVelocity(
             parseInt(depth?depth:props.vel.depth),
             parseInt(velocity?velocity:props.vel.velocity),
@@ -51,6 +59,122 @@ function ScanComponent(props) {
         setVelocityDepth("")
         setDepth("")
     }
+
+    const handleChangeRoughness = ()=>{
+        setEditRough(false)
+        if (roughness) {
+            props.changeRoughness(
+                props.index,
+                roughness
+            )
+        }
+        
+    }
+
+    const imuScan = ()=>{
+        console.log("here")
+        props.setImuIndex(props.index)
+        props.setAngleScan(true)
+        props.setHide(true)
+    }
+
+    const renderScan = ()=>{
+        if (props.device==="colorimeter") {
+            return(
+                
+                <>
+                    <div 
+                        onClick={()=>props.rescan(props.index)} 
+                        style={{backgroundColor:`${props.scan.color?"rgb("+props.scan.color.r+","+props.scan.color.g+","+props.scan.color.b+")":""}`}} 
+                        className="holeScanColor">
+                    
+                    </div>
+                </>
+                    
+            )
+        }
+
+        else if (props.device==="velocity") {
+            return(
+
+                <>
+                    {
+                        editvelocity?
+                        <form onSubmit={handleChangeVelocity}>
+                            <input type="number" 
+                                placeholder={props.vel.velocity} 
+                                value={velocity} 
+                                onChange={changeVelocity} 
+
+                            />
+                            <button type="submit" className="btn--flat">
+                            
+                                <i className="material-icons">
+                                    done
+                                </i>
+                            </button>
+                            
+                            {/* <input type="submit" value="Done" /> */}
+                        </form>
+                        
+                        :<h5 onClick={()=>setEditVelocity(!editvelocity)}>{props.vel.velocity}</h5>
+                    }
+                </>
+
+            )
+        }
+
+        else if (props.device==="orientation") {
+            return(
+                <>
+                    {
+                        <div className="angles" onClick={()=>imuScan()}>{props.angle.x!==undefined?"x:"+props.angle.x:"tap to measure"}</div>
+                    }
+                </>
+            )
+        }
+
+        else if (props.device==="laser") {
+            return(
+                <>
+                    {
+                        editrough?
+                        <form onSubmit={handleChangeRoughness}>
+                            <select type="number" 
+                                // placeholder={props.roughness} 
+                                // value={roughness} 
+                                onChange={changeRoughness} 
+
+                            >
+                                <option value="">--</option>
+                                <option value="0-2">0-2</option>
+                                <option value="2-4">2-4</option>
+                                <option value="4-6">4-6</option>
+                                <option value="6-8">6-8</option>
+                                <option value="8-10">8-10</option>
+                                <option value="10-12">10-12</option>
+                                <option value="12-14">12-14</option>
+                                <option value="14-16">14-16</option>
+                                <option value="16-18">16-18</option>
+                                <option value="18-20">18-20</option>
+
+                            </select>
+                            <button type="submit" className="btn--flat">
+                            
+                                <i className="material-icons">
+                                    done
+                                </i>
+                            </button>
+                            
+                            {/* <input type="submit" value="Done" /> */}
+                        </form>
+                        
+                        :<h5 onClick={()=>setEditRough(!editrough)}>{props.roughness}</h5>
+                    }
+                </>
+            )
+        }
+    }
     
 
     return(
@@ -58,7 +182,7 @@ function ScanComponent(props) {
             <div className="holeScan">
                 {
                     edit?
-                    <form onSubmit={props.velocity?handleChangeVelocity:handleEdit}>
+                    <form onSubmit={handleEdit}>
                         
                         <input type="number" placeholder={props.scan.depth} value={depth} onChange={changeDepth}  />
                         <button type="submit" className="btn--editDepth">Confirm</button>
@@ -70,48 +194,7 @@ function ScanComponent(props) {
                 {
                     edit?
                     "":
-                    !props.velocity?
-                    <>
-                        <div 
-                            onClick={()=>props.rescan(props.index)} 
-                            style={{backgroundColor:`${props.scan.color?"rgb("+props.scan.color.r+","+props.scan.color.g+","+props.scan.color.b+")":""}`}} 
-                            className="holeScanColor">
-                        
-                        </div>
-                    </>
-                    :<>
-                        {
-                            <>
-                                {/* {
-                                editvelocity?
-                                    
-                                    :<h5 onClick={()=>setEditVelocity(!editvelocity)}>{props.vel.velocity}</h5>
-                                } */}
-                                {
-                                    editvelocity?
-                                    <form onSubmit={handleChangeVelocity}>
-                                        <input type="number" 
-                                            placeholder={props.vel.velocity} 
-                                            value={velocity} 
-                                            onChange={changeVelocity} 
-
-                                        />
-                                        <button type="submit" className="btn--flat">
-                                        
-                                            <i className="material-icons">
-                                                done
-                                            </i>
-                                        </button>
-                                        
-                                        {/* <input type="submit" value="Done" /> */}
-                                    </form>
-                                    
-                                    :<h5 onClick={()=>setEditVelocity(!editvelocity)}>{props.vel.velocity}</h5>
-                                }
-                            </>
- 
-                        }
-                    </>
+                    renderScan()
                     
                 }
                 

@@ -72,3 +72,8 @@
     color: var(--primaryColor);
     border: 1px solid var(--gray);
 }
+
+.angles {
+    width: 80%!important;
+    font-size: 15px;
+}

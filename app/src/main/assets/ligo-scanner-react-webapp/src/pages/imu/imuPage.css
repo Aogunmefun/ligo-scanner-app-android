@@ -11,6 +11,8 @@
     margin-top: calc(var(--navbarHeight));
     padding-top: 20px;
     margin-bottom: 50px;
+    position: fixed;
+    top: 0;
 }
 
 .imuPage > h1 {

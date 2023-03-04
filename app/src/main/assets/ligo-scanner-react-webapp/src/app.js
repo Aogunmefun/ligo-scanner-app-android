@@ -21,6 +21,7 @@ function App(props) {
             // type: null,
             paired: false
         },
+        cv:null,
         active: 0,
         sidenavOpen: false,
         timeStamp:0,
@@ -54,20 +55,9 @@ function App(props) {
                         },
                         velocity: 3232
                     },
-                    {
-                        depth: 70,
-                        color: {
-                            r: 123,
-                            g: 50,
-                            b:2
-                        },
-                        velocity: 4821
-                    },
+                
                     
                     
-                ],
-                custom:[
-    
                 ],
                 velocity: [
                     {
@@ -82,6 +72,20 @@ function App(props) {
                         depth: 70,
                         velocity: 4821
                     },
+                 
+                ],
+                orientation: [
+                    {
+                        depth: 50,
+                        angle: {
+                            x: 0.35,
+                            y: 0.25,
+                            z:0.55
+                        }
+                    },
+                ],
+                roughness: [
+                    
                 ]
             },
             {
@@ -122,9 +126,6 @@ function App(props) {
                     },
                     
                 ],
-                custom:[
-    
-                ],
                 velocity: [
                     {
                         depth: 50,
@@ -138,14 +139,33 @@ function App(props) {
                         depth: 70,
                         velocity: 4521
                     },
+                ],
+                orientation: [
+
+                ],
+                roughness: [
+                    
                 ]
             }
         ]
     })
     
     useEffect(()=>{
-        console.log("App re-Rendering")
-    })
+        const script = document.createElement('script');
+        script.src = "opencv/opencv.js";
+        script.async = true;
+        script.onload = ()=>{
+            console.log("finished", cv)
+            let temp = app
+            temp.cv = cv
+            setApp(temp)
+        }
+        document.body.appendChild(script);
+        return ()=>{
+            document.body.removeChild(script);
+        }
+        
+    },[])
 
 
 

@@ -47,6 +47,93 @@ function DrillHoles(props) {
         }
     }
 
+    const renderHole = ()=>{
+        if (props.device==="colorimeter") {
+            return(
+                <>
+                    <h5>{"Colors:"}</h5>
+                    
+                    { props.hole.data.map((scan,index)=>{
+                        return(
+                            <div key={scan.depth+"colorimeterdrillholes"+index} className="holeScan">
+                                <h5>{scan.depth + "ft"}</h5>
+                                <div style={{backgroundColor:`${scan.color?"rgb("+scan.color.r+","+scan.color.g+","+scan.color.b+")":""}`}} className="holeScanColor">
+                                    
+                                </div>
+                                {/* <h5>{scan.color?"R:"+scan.color.r+" G:"+scan.color.g+" B:"+scan.color.b:""}</h5> */}
+                            </div>
+                        )
+                    })}
+                        
+                </>
+            )
+        }
+
+        else if (props.device==="velocity") {
+            return(
+                <>
+                    <h5>{"Strength:"}</h5>
+                   
+                        
+                    {props.hole.velocity.map((vel,index)=>{
+                        return(
+                            <div key={props.hole.config.name+"velocitydrillholes"+vel.depth} className="velocity-render">
+                                <h5>{vel.depth+"ft"}</h5>
+                                {
+                                    <h5>{vel.velocity}</h5>
+                                }
+
+                            </div>
+                        )
+                    })}
+                    
+                </>
+            )
+        }
+
+        else if (props.devices==="orientation") {
+            return(
+                <>
+                    <h5>{"Structures:"}</h5>
+                    
+                    {props.hole.orientation.map((scan,index)=>{
+                        return(
+                            <div key={props.hole.config.name+"orientationdrillholes"+scan.depth} className="velocity-render">
+                                <h5>{scan.depth+"ft"}</h5>
+                                {
+                                    <h5>{"x:"+scan.angle.x}</h5>
+                                }
+
+                            </div>
+                        )
+                    })}
+                    
+                </>
+            )
+        }
+
+        else if (props.device==="laser") {
+            return(
+                <>
+                    <h5>{"Roughness:"}</h5>
+                    
+                    {props.hole.roughness.map((scan,index)=>{
+                        return(
+                            <div key={props.hole.config.name+"roughnessdrillholes"+scan.depth} className="velocity-render">
+                                <h5>{scan.depth+"ft"}</h5>
+                                {
+                                    <h5>{scan.roughness}</h5>
+                                }
+
+                            </div>
+                        )
+                    })}
+                    
+                </>
+            )
+        }
+    }
+
     return(
         <div className="drillholes">
             {
@@ -84,34 +171,8 @@ function DrillHoles(props) {
                         
                     </div>
                     
+                    {renderHole()}
                     
-                    <h5>{props.device==="colorimeter"?"Colors:":"Velocity:"}</h5>
-                    {
-                        props.device==="colorimeter"?
-                        props.hole.data.map((scan,index)=>{
-                            return(
-                                <div key={scan.depth+index} className="holeScan">
-                                    <h5>{scan.depth + "ft"}</h5>
-                                    <div style={{backgroundColor:`${scan.color?"rgb("+scan.color.r+","+scan.color.g+","+scan.color.b+")":""}`}} className="holeScanColor">
-                                        
-                                    </div>
-                                    {/* <h5>{scan.color?"R:"+scan.color.r+" G:"+scan.color.g+" B:"+scan.color.b:""}</h5> */}
-                                </div>
-                            )
-                        })
-                        :
-                        props.hole.velocity.map((vel,index)=>{
-                            return(
-                                <div key={props.hole.config.name+"velocity"+vel.depth} className="velocity-render">
-                                    <h5>{vel.depth+"ft"}</h5>
-                                    {
-                                       <h5>{vel.velocity}</h5>
-                                    }
- 
-                                </div>
-                            )
-                        })
-                    }
                 </div>
 
             }

@@ -505,7 +505,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                 .gyroRange(SensorFusionBosch.GyroRange.GR_250DPS)
                 .commit();
         sensorFusion.quaternion().addRouteAsync(source -> source.limit(33).stream((data, env) -> {
-            Log.d("quarternions", data.value(Quaternion.class).toString());
+//            Log.d("quarternions", data.value(Quaternion.class).toString());
             webView.post(new Runnable() {
                 @Override
                 public void run() {

@@ -7,6 +7,7 @@ import DrillHole from "../../components/drillhole/drillhole";
 import DrillHoles from "../../components/drillholes/drillholes";
 import Modal from "../../components/modal/modal";
 
+
 import { Session } from "../../app";
 
 function ScanPage(props) {
@@ -22,12 +23,13 @@ function ScanPage(props) {
     const [editinfo, setEditInfo] = useState(false)
     const [editScan, setEditScan] = useState(false)
     const [modal, setModal] = useState({state:false, text:""})
+    const [hide, setHide] = useState(false)
     const app = useContext(Session)
 
     let navigate = useNavigate()
     
     useEffect(()=>{
-        if(app.app.device.active === "orientation") navigate("/orientation")
+        // if(app.app.device.active === "orientation") navigate("/orientation")
         window.addEventListener("scanComplete", handleScanComplete)
         window.addEventListener("scanning", handleScanning)
         
@@ -127,16 +129,13 @@ function ScanPage(props) {
             data: [
 
             ],
-            custom: [
-
-            ],
             velocity: [
 
             ],
             orientation: [
 
             ],
-            laser: [
+            roughness: [
                 
             ]
         })
@@ -175,15 +174,56 @@ function ScanPage(props) {
     const changeDepth = (depth, index)=>{
         let temp = app.app
         console.log(depth, index)
-        if (temp.drillholes[app.app.active].data.some((scan,index)=>scan.depth===depth)) {
-            console.log("same")
-            setModal({state:true, text:"Multiple scans with the same depth"})
-            return
+        if (temp.device.active==="colorimeter") {
+            if (temp.drillholes[app.app.active].data.some((scan,index)=>scan.depth===depth)) {
+                console.log("same")
+                setModal({state:true, text:"Multiple scans with the same depth"})
+                return
+            }
+            // console.log("sorting")
+            temp.drillholes[app.app.active].data[index].depth = depth
+            temp.drillholes[app.app.active].data.sort((a,b)=>a.depth-b.depth)
+            // console.log(temp)
         }
-        console.log("sorting")
-        temp.drillholes[app.app.active].data[index].depth = depth
-        temp.drillholes[app.app.active].data.sort((a,b)=>a.depth-b.depth)
-        console.log(temp)
+        else if (temp.device.active==="velocity") {
+            if (temp.drillholes[app.app.active].velocity.some((scan,index)=>scan.depth===depth)) {
+                console.log("same")
+                setModal({state:true, text:"Multiple scans with the same depth"})
+                return
+            }
+            console.log("sorting")
+            temp.drillholes[app.app.active].velocity[index].depth = depth
+            if (!app.app.drillholes[app.app.active].velocity.some((vel,index)=>vel.velocity==="--")) {
+                temp.drillholes[app.app.active].velocity.sort((a,b)=>a.depth-b.depth)
+            }
+            
+            console.log(temp)
+        }
+        else if (temp.device.active==="orientation") {
+            if (temp.drillholes[app.app.active].orientation.some((scan,index)=>scan.depth===depth)) {
+                console.log("same")
+                setModal({state:true, text:"Multiple scans with the same depth"})
+                return
+            }
+            console.log("sorting")
+            temp.drillholes[app.app.active].orientation[index].depth = depth
+            if (!app.app.drillholes[app.app.active].orientation.some((imu,index)=>imu.angle==="--")) {
+                temp.drillholes[app.app.active].orientation.sort((a,b)=>a.depth-b.depth)
+            }
+        }
+        else if (temp.device.active==="laser") {
+            if (temp.drillholes[app.app.active].roughness.some((scan,index)=>scan.depth===depth)) {
+                console.log("same")
+                setModal({state:true, text:"Multiple scans with the same depth"})
+                return
+            }
+            console.log("sorting")
+            temp.drillholes[app.app.active].roughness[index].depth = depth
+            if (!app.app.drillholes[app.app.active].roughness.some((rough,index)=>rough.roughness==="--")) {
+                temp.drillholes[app.app.active].roughness.sort((a,b)=>a.depth-b.depth)
+            }
+        }
+        
         // setScanning(!false)
         app.setApp({...temp})
         
@@ -259,21 +299,23 @@ function ScanPage(props) {
         }
         temp.drillholes[app.app.active].velocity.push({
             depth:"--",
-            velocity: 2000
+            velocity: "--"
         })
-        // temp.drillholes[app.app.active].velocity.sort((a,b)=>a.depth-b.depth)
         console.log("new velocity")
         app.setApp({...temp})
     }
 
     const handleChangeVelocity = (depth, velocity, index, changedepth)=>{
         let temp = app.app
-        console.log("yooo")
+        console.log("yooo", depth)
         if ((app.app.drillholes[app.app.active].velocity.some((vel,index)=>vel.depth===depth))&&changedepth) {
             setModal({state:true, text:"Can't change depth. This depth already exists"})
             return
         }
-        
+        if ((velocity<1000)||(velocity>8000)) {
+            setModal({state:true, text:"Velocity measurment should be between 1000 and 8000"})
+            return
+        }
         temp.drillholes[app.app.active].velocity[index] = {
             depth:depth?depth:"--",
             velocity:velocity
@@ -281,6 +323,38 @@ function ScanPage(props) {
         temp.drillholes[app.app.active].velocity.sort((a,b)=>a.depth-b.depth)
         app.setApp({...temp})
 
+    }
+
+    const newOrientation = ()=>{
+        let temp = app.app
+        if (app.app.drillholes[app.app.active].orientation.some((angle,index)=>angle.depth==="--")) {
+            setModal({state:true, text:"Please first enter a depth for your previous measurement"})
+            return
+        }
+        temp.drillholes[app.app.active].orientation.push({
+            depth:"--",
+            angle: "--"
+        })
+        console.log("new orientation")
+        app.setApp({...temp})
+    }
+
+    const changeOrientation = ()=>{
+
+    }
+
+    const newRoughness = ()=>{
+        let temp = app.app
+        if (app.app.drillholes[app.app.active].roughness.some((scan,index)=>scan.depth==="--")) {
+            setModal({state:true, text:"Please first enter a depth for your previous measurement"})
+            return
+        }
+        temp.drillholes[app.app.active].roughness.push({
+            depth:"--",
+            roughness: "--"
+        })
+        console.log("new orientation")
+        app.setApp({...temp})
     }
 
     return(
@@ -299,10 +373,10 @@ function ScanPage(props) {
                 </div>
             }
             {scanning?<Loader text="Scanning..." />:""}
-            <button onClick={()=>{
+            {!hide?<button onClick={()=>{
                 setCreate(true)
                 window.scroll(0,0)
-            }}>New Drilhole <i className="material-icons">add_circle_outline</i></button>
+            }}>New Drilhole <i className="material-icons">add_circle_outline</i></button>:""}
             {
                 scanpageTab===1?
                 <DrillHole 
@@ -320,7 +394,11 @@ function ScanPage(props) {
                     changeStartDepth = {handleChangeStartDepth}
                     newVelocity = {newVelocity}
                     changeVelocity = {handleChangeVelocity}
+                    newOrientation = {newOrientation}
+                    changeOrientation={changeOrientation}
                     device = {app.app.device.active}
+                    setHide={setHide}
+                    newRoughness = {newRoughness}
                 />
                 :<>
                     {

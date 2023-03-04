@@ -98,7 +98,9 @@ function OrientationDevice(props) {
     return(
         <div className="orientationDevice">
             {connecting?<Loader text={props.paired?"Disconnecting...":"Connecting..."} />:""}
-            <h2>Orientations</h2>
+            
+                <img width="50%" src={logo} alt="" />
+                                        
             <button onClick={startScan} className="btn--velocityDeviceConnect">{scanning?"Scanning...":"Scan for devices"}</button>
             {
                 scanning?
@@ -109,9 +111,7 @@ function OrientationDevice(props) {
                             scannedDevices.map((device,index)=>{
                                 return(
                                     <div onClick={()=>Android.orientationConnect(device.address)} key={device.address + index} id={device.address} className="found-device ">
-                                        <div class="found-device-img">
-                                            <img width="100%" src={logo} alt="" />
-                                        </div>
+                                        
                                         <div class="found-device-info">
                                             <p>{`Name: ${device.name}`}</p>
                                             <p>{`Address: ${device.address}`}</p>

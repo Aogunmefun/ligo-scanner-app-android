@@ -1,6 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import "./drillhole.css"
 import ScanComponent from "../scanComponent/scanComponent";
+import ImuPage from "../../pages/imu/imuPage";
+import Camera from "../camera/camera";
+import { OpenCvProvider } from "opencv-react";
+import { Session } from "../../app";
 
 
 function DrillHole(props) {
@@ -13,19 +17,27 @@ function DrillHole(props) {
     
     const [expanded, setExpanded] = useState(true)
     const [page, setPage] = useState(true)
+
+    const [angleScan, setAngleScan] = useState(false)
+    const [imuindex, setImuIndex] = useState(null)
+
+    const [roughScan, setRoughScan] = useState(false)
+    const [roughindex, setRoughIndex] = useState(null)
+
+    const app = useContext(Session)
     
     useEffect(()=>{
-        console.log(props.hole)
+        // console.log(document.querySelector(".drillhole").scrollHeight)
         
         if (!editinfo) {
             window.scroll({
-                top: document.querySelector(".drillhole").scrollHeight,
+                top: 500,
                 left:0,
                 behavior: 'smooth'
             })
         }
         
-    }, [props.scanning, props.hole])
+    })
 
     
     const changeInterval = (ev)=>{
@@ -60,16 +72,17 @@ function DrillHole(props) {
     }
 
     const handleChangeVelocity = (mydepth, myvelocity, myindex)=>{
-        setEditVelocity(false)
-        if ((parseInt(velocityDepth) === props.hole.velocity[index].depth)||!velocityDepth) {
+        console.log(props.hole.velocity, myindex)
+
+        if ((parseInt(mydepth) === props.hole.velocity[myindex].depth)||!mydepth) {
             return
         }
         props.changeVelocity(
-            parseInt(velocityDepth),
-            parseInt(velocity),
-            index
+            parseInt(mydepth),
+            parseInt(myvelocity),
+            myindex
         )
-        setVelocityDepth("")
+
     }
 
     const changeDepth = (depth, index)=>{
@@ -81,15 +94,180 @@ function DrillHole(props) {
     }
 
     
-    
     const rescan = (index)=>{
         props.rescan(index)
+    }
+
+    const getAngles = (angles)=>{
+        setAngleScan(false)
+        let temp = app.app
+        temp.drillholes[app.app.active].orientation[imuindex].angle = {
+            x: angles.x,
+            // y:angles.y,
+            // z:angles.z
+        }
+        console.log(temp)
+        app.setApp({...temp})
+    }
+
+    const changeRoughness = (index, roughness)=>{
+        let temp = app.app
+        temp.drillholes[app.app.active].roughness[index].roughness = roughness
+        app.setApp({...temp})
+    }
+
+    const enableCamera = ()=>{
+        setRoughScan(true)
+        props.setHide(true)
+    }
+
+    const render = ()=>{
+        console.log(props.device)
+        if(props.device==="colorimeter"){
+            return(
+                <>
+                    <h5>Colors</h5>
+                        {
+                            
+                            props.hole.data.length > 0?
+                            props.hole?.data.map((scan,index)=>{
+                                return(
+                                    <ScanComponent 
+                                        rescan={rescan} 
+                                        changeDepth={changeDepth} 
+                                        key={props.hole.config.name+scan.depth+index} 
+                                        scan={scan} 
+                                        index={index} 
+                                        edit={props.editScan}
+                                        setEdit={props.setEditScan}
+                                        device={props.device}    
+                                    />
+                                )
+                            })
+                            :<h5 style={{border:"none", textAlign:"center"}}>
+                                Create new scan by pressing the scan button on the device...
+                            </h5>
+                           
+
+                        }
+                        <button onClick={props.handleManualDepth} className="btn--manualDepth">New manual depth</button>
+                </>
+            )
+        }
+
+        else if (props.device==="velocity") {
+            return(
+                <>
+                    <h5>Velocity</h5>
+                        {
+                            
+                            props.hole.velocity?.length > 0?
+                            props.hole?.velocity?.map((vel,index)=>{
+                                return(
+                                    <ScanComponent 
+                                        changeVelocity={props.changeVelocity}
+                                        device={props.device}
+                                        changeDepth={changeDepth} 
+                                        key={props.hole.config.name+"velocity"+vel.depth} 
+                                        scan={vel} 
+                                        index={index} 
+                                        edit={props.editScan}
+                                        setEdit={props.setEditScan}   
+                                        vel = {vel} 
+                                    />
+                                    
+                                )
+                            })
+                            :<h5 style={{border:"none", textAlign:"center"}}>
+                                Click below to enter new velocity readings...
+                            </h5>
+                            
+                        }
+                        <button onClick={props.newVelocity} className="btn--manualDepth">New Velocity</button>
+                </>
+            )
+        }
+
+        else if (props.device==="orientation") {
+            return(
+                <>
+                    <h5>Structures</h5>
+                        {
+                            
+                            props.hole.orientation?.length > 0?
+                            props.hole?.orientation?.map((angle,index)=>{
+                                return(
+                                    <ScanComponent 
+                                        changeVelocity={props.changeVelocity}
+                                        device={props.device}
+                                        changeDepth={changeDepth} 
+                                        key={props.hole.config.name+"orientation"+angle.depth} 
+                                        scan={angle} 
+                                        index={index} 
+                                        edit={props.editScan}
+                                        setEdit={props.setEditScan}   
+                                        angle = {angle.angle}
+                                        setAngleScan = {setAngleScan} 
+                                        setHide = {props.setHide}
+                                        setImuIndex = {setImuIndex}
+                                    />
+                                    
+                                )
+                            })
+                            :<h5 style={{border:"none", textAlign:"center"}}>
+                                Click below to enter new structure readings...
+                            </h5>
+                            
+                        }
+                        <button onClick={props.newOrientation} className="btn--manualDepth">New Structure</button>
+                </>
+            )
+        }
+
+        else if (props.device==="laser") {
+            return(
+                <>
+                    <h5>Roughness</h5>
+                        {
+                            
+                            props.hole.roughness?.length > 0?
+                            props.hole?.roughness?.map((scan,index)=>{
+                                return(
+                                    <ScanComponent 
+                                        changeVelocity={props.changeVelocity}
+                                        device={props.device}
+                                        changeDepth={changeDepth} 
+                                        key={props.hole.config.name+"roughness"+scan.depth} 
+                                        scan={scan} 
+                                        roughness={scan.roughness}
+                                        index={index} 
+                                        edit={props.editScan}
+                                        setEdit={props.setEditScan}   
+                                        setHide = {props.setHide}
+                                        setRoughIndex = {setRoughIndex}
+                                        setRoughScan = {setRoughScan}
+                                        changeRoughness = {changeRoughness}
+                                    />
+                                    
+                                )
+                            })
+                            :<h5 style={{border:"none", textAlign:"center"}}>
+                                Click below to enter new Roughness readings...
+                            </h5>
+                            
+                        }
+                        <button onClick={props.newRoughness} className="btn--manualDepth">New Structure</button>
+                        <button onClick={enableCamera}>Enable Camera</button>
+                </>
+            )
+        }
+        
     }
 
     return(
         <div className="drillhole">
             {
-                props.hole?
+                props.hole&&!angleScan&&!roughScan?
                 
                 <div style={{height:`${!expanded?"150px":"fit-content"}`}} id={props.hole?.config.name} className="hole">
                     {
@@ -116,7 +294,7 @@ function DrillHole(props) {
                                         </i>
                                     </button>
                                 </div>
-                                :<h6 onClick={handleEdit}>{"Interval: " + props.hole?.config.interval + "ft"}</h6>
+                                :<h6 onClick={handleEdit}>{"Interval: " + props.hole?.config.interval + "ft..."}</h6>
                             }
                             {
                                 editdepth?
@@ -134,7 +312,7 @@ function DrillHole(props) {
                                     </button>
                                 </div>
                                 :<h6 onClick={()=>{props.hole?.data.length===0?setEditDepth(!editdepth):""}}>
-                                    {"Start Depth: " + props.hole?.config.start + "ft"}</h6>
+                                    {"Start Depth: " + props.hole?.config.start + "ft..."}</h6>
                             }
                         </div>
                         <div className="holebuttons">
@@ -143,63 +321,26 @@ function DrillHole(props) {
                         </div>
                         
                     </div>
+                    {render()}
                     
-                    <h5>{props.device==="colorimeter"?"Colors:":"Velocity:"}</h5>
-                    {
-                        props.device==="colorimeter"?
-                        <>
-                            {
-                                props.hole.data.length > 0?
-                                props.hole?.data.map((scan,index)=>{
-                                    return(
-                                        <ScanComponent 
-                                            rescan={rescan} 
-                                            changeDepth={changeDepth} 
-                                            key={props.hole.config.name+scan.depth+index} 
-                                            scan={scan} 
-                                            index={index} 
-                                            edit={props.editScan}
-                                            setEdit={props.setEditScan}    
-                                        />
-                                    )
-                                })
-                                :<h5 style={{border:"none", textAlign:"center"}}>
-                                    Create new scan by pressing the scan button on the device...
-                                </h5>
-                            }
-                        </>
-                        :
-                        <>
-                            {
-                                props.hole.velocity?.length > 0?
-                                props.hole?.velocity?.map((vel,index)=>{
-                                    return(
-                                        <ScanComponent 
-                                            changeVelocity={props.changeVelocity}
-                                            velocity={true}
-                                            changeDepth={handleChangeVelocity} 
-                                            key={props.hole.config.name+"velocity"+vel.depth} 
-                                            scan={vel} 
-                                            index={index} 
-                                            edit={props.editScan}
-                                            setEdit={props.setEditScan}   
-                                            vel = {vel} 
-                                        />
-                                        
-                                    )
-                                })
-                                :<h5 style={{border:"none", textAlign:"center"}}>
-                                    Click Add to enter new velocity readings...
-                                </h5>
-                            }
-                        </>
-                    }
-                    {props.device==="colorimeter"?<button onClick={props.handleManualDepth} className="btn--manualDepth">New manual depth</button>:""}
-                    {props.device!=="colorimeter"?<button onClick={props.newVelocity} className="btn--manualDepth">New Velocity</button>:""}
                 </div>
                 : ""
                 
             }
+            {angleScan?<ImuPage setAngleScan={setAngleScan} getAngles={getAngles} />:""}
+            {/* {
+              
+                <OpenCvProvider 
+                    // openCvPath={
+                    // 'opencv/opencv.js'
+                    // }
+                >
+                    
+                </OpenCvProvider>
+                
+                
+            } */}
+            {roughScan?<Camera  roughScan={roughScan} setRoughScan={setRoughScan}  />:""}
             <div className="drillhole-end"></div>
         </div>
     )

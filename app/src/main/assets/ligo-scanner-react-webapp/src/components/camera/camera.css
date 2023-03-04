@@ -6,12 +6,27 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    overflow-x: hidden;
+    overflow-y: hidden;
+    gap: 20px;
     /* height: 100vh; */
-    min-height: 500px;
+    max-height: 500px;
+    /* position: fixed; */
+    /* top: -500px; */
+    /* margin-top: calc(var(--navbarHeight)); */
 }
 
 .camera > video {
     /* visibility:hidden; */
     /* height: 5px; */
-    opacity: 0;
+    /* height: 500px; */
+    /* opacity: 0; */
+}
+
+.camera > img {
+    /* visibility: hidden; */
+}
+
+.camera > canvas {
+    /* margin-top: -1000px; */
 }

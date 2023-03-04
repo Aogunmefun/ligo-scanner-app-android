@@ -22,6 +22,7 @@
     gap: 100px;
     padding-left: 10px;
     padding-top: 20px;
+    position: relative;
 }
 
 .navbar-burger > i {
@@ -31,4 +32,6 @@
 
 .navbar-logo {
     width: 30%;
+    position: absolute;
+    right: 20px;
 }

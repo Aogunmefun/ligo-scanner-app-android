@@ -2,8 +2,7 @@ import React, { useState, useContext, useEffect } from "react";
 import "./roughnessDevice.css"
 import { Session } from "../../app";
 import logo from "./roughness.png"
-import Camera from "../camera/camera";
-import { OpenCvProvider } from "opencv-react";
+
 
 function RoughnessDevice(props) {
     const [active, setActive] = useState()
@@ -35,14 +34,12 @@ function RoughnessDevice(props) {
         <div className="roughnessDevice">
             <img src={logo} width="50%" alt="" />
             <button onClick={changeDevice} className="btn--roughnessDeviceConnect">{active?"Disconnect":"Make Active"}</button>
-            {active?
-                <OpenCvProvider>
-                <Camera  />
-                </OpenCvProvider>
+            
+                
             
 
                 
-            :""}
+            
             {/* {active?<button onClick={}>Do it</button>:""} */}
         </div>
     )
