@@ -15,7 +15,24 @@ export const Session = createContext()
 
 function App(props) {
 
-    const [app, setApp] = useState({})
+    const [app, setApp] = useState({
+        device: {
+            active: null,
+            name: null,
+            address: null,
+            // type: null,
+            paired: false
+        },
+        endpoint:"",
+        navbar:false,
+        cv:null,
+        active: 0,
+        sidenavOpen: false,
+        timeStamp:0,
+        rescan:false,
+        rescanindex:null,
+        user:null
+    })
 
     // const [app, setApp] = useState({
     //     device: {
@@ -179,8 +196,8 @@ function App(props) {
     
 
     return (
-        <BrowserRouter>
-        {/* <HashRouter> */}
+        // <BrowserRouter>
+        <HashRouter>
             {app.navbar?<Navbar />:""}
             <Session.Provider value={{app:app, setApp:setApp}}>
                 <Routes>
@@ -195,8 +212,8 @@ function App(props) {
                 </Routes>
             </Session.Provider>
             
-        {/* </HashRouter> */}
-        </BrowserRouter>
+        </HashRouter>
+        // </BrowserRouter>
     )
 }
 

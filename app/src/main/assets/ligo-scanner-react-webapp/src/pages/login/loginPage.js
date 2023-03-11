@@ -34,7 +34,7 @@ function LoginPage() {
     }
 
     const findUser = (ev)=>{
-        ev.preventDefault()
+        // ev.preventDefault()
         setSubmitEmail(false)
         setLoading(true)
         console.log("yo")
@@ -43,17 +43,26 @@ function LoginPage() {
             method:"POST",
             headers:{"Content-Type":"application/json"},
             data:{
-                email:email
+                // email:email
+                email:"deoluutah@yahoo.com"
             }
         }).then((res)=>{
             console.log(res.data)
-            setStage(2)
-            setLoading(false)
-            setSubmitEmail(false)
-            if (res.data.res===null) {
-                setModal({state:true, text:"User doesn't Exist. However, we created a new user using this email"})
+            // setStage(2)
+            // setLoading(false)
+            // setSubmitEmail(false)
+            // if (res.data.res===null) {
+            //     setModal({state:true, text:"User doesn't Exist. However, we created a new user using this email"})
 
-            }
+            // }
+            navigate("/devices")
+            app.setApp({
+                ...app.app,
+                user: {
+                    email: res.data.user.email,
+                    drillholes: res.data.user.drillholes
+                }
+            })
             
         }).catch((e)=>{
             console.log("error")
@@ -100,7 +109,7 @@ function LoginPage() {
         {modal.state?<Modal text={modal.text} setModal={setModal} />:""}
             <div className="loginDisplay">
                 
-                <Splash begin={begin} setBegin={setBegin} />
+                <Splash findUser={findUser} begin={begin} setBegin={setBegin} />
                 <Loader loading={loading} />
                 {   
                     <div className={`loginForm ${begin?"loginFormAppear":""}`}>

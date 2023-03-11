@@ -15,5 +15,5 @@
     align-items: center;
     background-color: var(--lightGray);
     opacity: 0.6;
-    
+    z-index: 2;
 }

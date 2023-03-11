@@ -152,8 +152,8 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         webSettings.setJavaScriptEnabled(true);
         webView.setWebViewClient(new WebViewClient());
 
-        webView.loadUrl("http://3.131.37.239");
-//        webView.loadUrl("file:///android_asset/ligo-scanner-react-webapp/output/index.html");
+//        webView.loadUrl("http://3.131.37.239");
+        webView.loadUrl("file:///android_asset/ligo-scanner-react-webapp/output/index.html");
 //        webView.loadDataWithBaseURL("http://localhost:3000" , "file:///android_asset/ligo-scanner-react-webapp/output/index.html" ,  "text/html" , "UTF-8" , null);
 
 

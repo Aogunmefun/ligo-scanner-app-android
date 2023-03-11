@@ -44,7 +44,7 @@ function BLEScan(props) {
         window.addEventListener('colorimeterDisconnected', handleDisconnected)
         
 
-    }, [scannedDevices])
+    }, [])
 
     
 
@@ -79,7 +79,7 @@ function BLEScan(props) {
         // app.device.type = connectedDevice[0].type
         temp.device.paired = true
         app.setApp(temp)
-        upload(temp)
+        // upload(temp)
         setConnecting(false)
         setScanning(false)
         
@@ -93,7 +93,7 @@ function BLEScan(props) {
         temp.device.active = null
         temp.device.paired = false
         app.setApp({...temp})
-        upload(temp)
+        // upload(temp)
         setConnecting(false)
     }
 
@@ -121,7 +121,7 @@ function BLEScan(props) {
                 />  
                 :""
             }
-            {connecting?<Loader text={app.app.device.paired?"Disconnecting...":"Connecting..."} />:""}
+            {connecting?<Loader loading={connecting} text={app.app.device.paired?"Disconnecting...":"Connecting..."} />:""}
             {loading?<Loader text="hold on..." />:""}
             <img width="30%" src={logo} alt="" />
             {/* <h1>{!app.app.device.paired?"Pair Device":"Device Paired"}</h1> */}

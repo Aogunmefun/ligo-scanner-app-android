@@ -76,7 +76,7 @@ function OrientationDevice(props) {
         // app.device.type = connectedDevice[0].type
         temp.device.paired = true
         app.setApp({...temp})
-        upload(temp)
+        // upload(temp)
         setConnecting(false)
         setScanning(false)
         
@@ -89,7 +89,7 @@ function OrientationDevice(props) {
         temp.device.active = null
         temp.device.paired = false
         app.setApp({...temp})
-        upload(temp)
+        // upload(temp)
     }
 
     const disconnect = ()=>{
@@ -127,7 +127,7 @@ function OrientationDevice(props) {
                 />  
                 :""
             }
-            {connecting?<Loader text={props.paired?"Disconnecting...":"Connecting..."} />:""}
+            {connecting?<Loader loading={connecting} text={props.paired?"Disconnecting...":"Connecting..."} />:""}
             {loading?<Loader text="hold on..." />:""}
             
                 <img width="50%" src={logo} alt="" />

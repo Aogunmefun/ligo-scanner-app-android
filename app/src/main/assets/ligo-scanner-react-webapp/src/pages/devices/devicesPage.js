@@ -19,6 +19,7 @@ function DevicesPage() {
         let temp = app.app
         temp.navbar = true
         app.setApp({...temp})
+        console.log(app.app)
     },[])
 
     const upload = (temp)=>{
@@ -44,7 +45,7 @@ function DevicesPage() {
         let temp = app.app
         temp.device.active = dev
         app.setApp({...temp})
-        upload(temp)
+        // upload(temp)
     }
 
     return(
