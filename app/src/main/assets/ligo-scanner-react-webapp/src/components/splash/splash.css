@@ -1,0 +1,66 @@
+@import url("../../index.css");
+
+.splash {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* justify-content: center; */
+    width: 100%;
+    transition: all 0.5s;
+    overflow: hidden;
+    padding-top: 90px;
+    /* padding-bottom: 10px; */
+    height: 500px;
+    /* height: 100vh; */
+    /* gap: 50px; */
+    
+    /* margin-top: calc(var(--navbarHeight)); */
+}
+
+.splashCircle {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    border: 1px solid var(--primaryColor);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    animation: expand 1.5s alternate forwards;
+    box-shadow: 0px 0px 10px var(--primaryColor);
+}
+
+.splashCircle > img {
+    animation: blurry 1s normal forwards;
+    
+    /* width: 100%; */
+    /* box-shadow: 0px 0px 10px var(--primaryColor); */
+    /* border-radius: 0.2rem; */
+}   
+
+.btn--splash {
+    opacity: 0;
+    animation: appear 1s 1.5s normal forwards;
+    margin-top: 100px;
+    
+}
+
+.btn--splashOut {
+    opacity: 1;
+    margin-top: 100px;
+    animation: slideOutRight 0.5s normal forwards;
+   
+}
+
+
+
+@keyframes blurry {
+    from{transform: rotate(0deg);}
+    to{transform: rotate(360deg);}
+    /* 100%{filter: blur(10px);transform: scale(0);} */
+}
+
+@keyframes expand {
+    0%{transform: scale(1);}
+    50%{transform: scale(1.5);}
+    0%{transform: scale(1);}
+}

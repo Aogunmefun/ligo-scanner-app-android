@@ -16,7 +16,7 @@ function ImuPage(props) {
     useEffect(()=>{
         if (app.app.device.active !== "orientation") navigate("/scan") 
             
-        // Android.getangles()
+        Android.getangles()
         window.addEventListener('angles', handleAngles)
 
     }, [])

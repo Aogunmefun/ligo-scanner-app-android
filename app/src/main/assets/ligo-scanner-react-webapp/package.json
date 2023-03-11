@@ -14,11 +14,13 @@
   "name": "react-boilerplate-custom",
   "version": "1.0.0",
   "main": "index.js",
+  
   "dependencies": {
     "acorn": "^8.8.1",
     "acorn-import-assertions": "^1.8.0",
     "ajv": "^6.12.6",
     "ajv-keywords": "^3.5.2",
+    "axios": "^1.3.4",
     "browserslist": "^4.21.4",
     "buffer-from": "^1.1.2",
     "caniuse-lite": "^1.0.30001441",
@@ -97,7 +99,6 @@
     "tapable": "^2.2.1",
     "terser": "^5.16.1",
     "terser-webpack-plugin": "^5.3.6",
-    "three": "^0.150.1",
     "three-obj-mtl-loader": "^1.0.3",
     "three-orbitcontrols": "^2.110.3",
     "update-browserslist-db": "^1.0.10",
@@ -111,8 +112,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack",
-    "start": "webpack serve --mode development --https"
+    "start": "webpack serve --mode development"
   },
+  
   "author": "",
   "license": "ISC",
   "description": ""

@@ -1,0 +1,23 @@
+@import url("../../index.css");
+
+
+.code {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    width: 100%;
+    gap: 10px;
+}
+
+.codeBox {
+    width: 50px;
+    height: 80px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* padding: 5px; */
+    border: 1px solid var(--primaryColor);
+    font-size: 50px;
+    text-align: center;
+    
+}

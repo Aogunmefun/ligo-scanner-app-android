@@ -59,10 +59,6 @@ import bolts.Task;
 //import com.mbientlab.bletoolbox.scanner.BleScannerFragment;
 //import com.mbientlab.metawear.module.Gpio;
 
-import org.opencv.core.Core;
-import org.opencv.core.Mat;
-import org.opencv.imgcodecs.Imgcodecs;
-import org.opencv.imgproc.Imgproc;
 
 public class MainActivity extends AppCompatActivity implements ServiceConnection {
 
@@ -124,24 +120,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         // Get instance of Vibrator from current context
         mVibrator = (Vibrator) this.getSystemService(Context.VIBRATOR_SERVICE);
 
-        webView = (WebView) findViewById(R.id.webview);
-        webView.setWebChromeClient(new WebChromeClient() {
-            @Override
-            public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
-                Log.d("MyApplication", consoleMessage.message() + " -- From line " +
-                        consoleMessage.lineNumber() + " of " + consoleMessage.sourceId());
-                return true;
-            }
-        });
-//        webView.addJavascriptInterface(new WebAppInterface(this), "Android");
-        webView.addJavascriptInterface(this, "Android");
-        WebSettings webSettings = webView.getSettings();
 
-        webSettings.setJavaScriptEnabled(true);
-        webView.setWebViewClient(new WebViewClient());
-
-//        webView.loadUrl("file:///android_asset/index.html");
-        webView.loadUrl("file:///android_asset/ligo-scanner-react-webapp/output/index.html");
         mScanner = new NixDeviceScanner(this);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
@@ -155,7 +134,29 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         bleadapter = blemanager.getAdapter();
         blescanner = bleadapter.getBluetoothLeScanner();
 
-//        webView.getSettings().setPluginState(WebSettings.PluginState.ON);
+
+
+        webView = (WebView) findViewById(R.id.webview);
+        webView.setWebChromeClient(new WebChromeClient() {
+            @Override
+            public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
+                Log.d("MyApplication", consoleMessage.message() + " -- From line " +
+                        consoleMessage.lineNumber() + " of " + consoleMessage.sourceId());
+                return true;
+            }
+        });
+
+        webView.addJavascriptInterface(this, "Android");
+        WebSettings webSettings = webView.getSettings();
+////
+        webSettings.setJavaScriptEnabled(true);
+        webView.setWebViewClient(new WebViewClient());
+
+        webView.loadUrl("http://3.131.37.239");
+//        webView.loadUrl("file:///android_asset/ligo-scanner-react-webapp/output/index.html");
+//        webView.loadDataWithBaseURL("http://localhost:3000" , "file:///android_asset/ligo-scanner-react-webapp/output/index.html" ,  "text/html" , "UTF-8" , null);
+
+
         webView.getSettings().setMediaPlaybackRequiresUserGesture(false);
 
 
@@ -170,9 +171,11 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
 
         });
 
+        /**************/
+
 //        System.loadLibrary( Core.NATIVE_LIBRARY_NAME )/;
-
-
+//        webView.getSettings().setPluginState(WebSettings.PluginState.ON);
+//        webView.addJavascriptInterface(new WebAppInterface(this), "Android");
 
     }
 
@@ -180,13 +183,19 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
 
     @JavascriptInterface
     public void scan() {
+        Log.d("Permission", String.valueOf(ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)));
+        Log.d("permision", String.valueOf(PackageManager.PERMISSION_GRANTED));
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            Log.d("denied","Camera denied bro");
+            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.CAMERA}, 1);
+        }
         Log.d("Yo", "WE here");
-        webView.post(new Runnable() {
-            @Override
-            public void run() {
-                webView.loadUrl("javascript:data()");
-            }
-        });
+//        webView.post(new Runnable() {
+//            @Override
+//            public void run() {
+//                webView.loadUrl("javascript:data()");
+//            }
+//        });
         mScanner.startDevicesScan(new BluetoothAdapter.LeScanCallback() {
 
             @Override
@@ -520,16 +529,6 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
     }
 
 //    Laser Device
-
-    @JavascriptInterface
-    public void maskImg() {
-        Imgcodecs cv2 = new Imgcodecs();
-        Mat img = cv2.imread("C:/Users/deolu/OneDrive/Documents/ligo-scanner-app-android/ImageProcessing/roughness/IMG_1190.JPEG");
-        Mat imghsv = new Mat();
-        Imgproc.cvtColor(img, imghsv, Imgproc.COLOR_BGR2HSV);
-        cv2.imwrite("C:/Users/deolu/OneDrive/Documents/ligo-scanner-app-android/ImageProcessing/roughness/test.jpg", imghsv);
-    }
-
     private static String[] requiredBluetoothPermissions() {
         ArrayList<String> requiredPermissions = new ArrayList<>();
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {

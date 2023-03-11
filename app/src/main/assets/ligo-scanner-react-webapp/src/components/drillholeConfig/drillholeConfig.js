@@ -22,7 +22,7 @@ function DrillHoleConfig(props) {
     }
 
     const changeName = (ev)=>{
-        setName(ev.target.value)
+        setName(ev.target.value.toUpperCase())
     }
     const changeInterval = (ev)=>{
         setInterval(ev.target.value)

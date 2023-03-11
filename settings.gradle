@@ -18,4 +18,3 @@ include ':nixlibrary'
 include ':mbientlab'
 
 
-include ':opencv'

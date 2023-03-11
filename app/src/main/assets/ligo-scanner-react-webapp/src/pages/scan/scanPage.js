@@ -6,6 +6,7 @@ import DrillHoleConfig from "../../components/drillholeConfig/drillholeConfig";
 import DrillHole from "../../components/drillhole/drillhole";
 import DrillHoles from "../../components/drillholes/drillholes";
 import Modal from "../../components/modal/modal";
+import axios from "axios";
 
 
 import { Session } from "../../app";
@@ -24,11 +25,17 @@ function ScanPage(props) {
     const [editScan, setEditScan] = useState(false)
     const [modal, setModal] = useState({state:false, text:""})
     const [hide, setHide] = useState(false)
+    const [loading, setLoading] = useState(false)
     const app = useContext(Session)
 
     let navigate = useNavigate()
     
     useEffect(()=>{
+        let temp = app.app
+        temp.navbar = true
+        app.setApp({...temp})
+        console.log(app.app)
+        upload(temp)
         // if(app.app.device.active === "orientation") navigate("/orientation")
         window.addEventListener("scanComplete", handleScanComplete)
         window.addEventListener("scanning", handleScanning)
@@ -41,6 +48,22 @@ function ScanPage(props) {
         }
         
     },[scanning])
+
+    const upload = (temp)=>{
+        setLoading(true)
+        axios({
+            url:"https://api.alphaspringsedu.com/ligo-upload",
+            method:"POST",
+            headers:{"Content-Type":"application/json"},
+            data:{
+                email:app.app.email,
+                data:temp
+            }
+        }).then((res)=>{
+            setLoading(false)
+            app.setApp(res.data.user)
+        }).catch((e)=>setModal({state:true, text:e.message}))
+    }
 
     const scanColor = ()=>{
         Android.scanColor()
@@ -110,6 +133,7 @@ function ScanPage(props) {
             
             setScanning(false)
             setScanPageTab(1)
+            upload(temp)
             // app.app.timeStamp = sensor.timeStamp
             console.log("color", sensor.detail.r,sensor.detail.g,sensor.detail.b)
         }
@@ -142,6 +166,7 @@ function ScanPage(props) {
         temp.active = app.app.drillholes.length - 1
         console.log("Active", app.app.active)
         app.setApp(temp)
+        upload(temp)
         setCreate(false)
         setScanPageTab(1)
         
@@ -157,6 +182,7 @@ function ScanPage(props) {
         temp.active = index
         console.log(typeof index)
         app.setApp(temp)
+        upload(temp)
         setScanPageTab(1)
     }
 
@@ -168,6 +194,7 @@ function ScanPage(props) {
             interval:interval
         }
         app.setApp(temp)
+        upload(temp)
     }
 
 
@@ -226,7 +253,7 @@ function ScanPage(props) {
         
         // setScanning(!false)
         app.setApp({...temp})
-        
+        upload(temp)
         
     }
 
@@ -237,6 +264,7 @@ function ScanPage(props) {
             start:startdepth
         }
         app.setApp(temp)
+        upload(temp)
     }
 
     const handleReScan = (index)=>{
@@ -250,6 +278,7 @@ function ScanPage(props) {
         app.setApp(temp)
         setReScan(true)
         setReScanIndex(index)
+        upload(temp)
     }
 
     const archiveHole = (archiveIndex)=>{
@@ -259,6 +288,7 @@ function ScanPage(props) {
         temp.active = 0
         console.log(app.app.drillholes.length-1)
         app.setApp({...temp})
+        upload(temp)
     }
 
     const handleManualDepth = ()=>{
@@ -280,6 +310,7 @@ function ScanPage(props) {
         console.log(scanning)
         console.log(app.app.drillholes[app.app.active].data)
         app.setApp(temp)
+        upload(temp)
         setManualScan(true)
         handleReScan( temp.drillholes[app.app.active].data.length-1)
     }
@@ -288,6 +319,7 @@ function ScanPage(props) {
         let temp = app.app
         temp.drillholes[app.app.active].data.pop()
         app.setApp(temp)
+        upload(temp)
         setManualScan(false)
     }
 
@@ -303,6 +335,7 @@ function ScanPage(props) {
         })
         console.log("new velocity")
         app.setApp({...temp})
+        upload(temp)
     }
 
     const handleChangeVelocity = (depth, velocity, index, changedepth)=>{
@@ -322,6 +355,7 @@ function ScanPage(props) {
         }
         temp.drillholes[app.app.active].velocity.sort((a,b)=>a.depth-b.depth)
         app.setApp({...temp})
+        upload(temp)
 
     }
 
@@ -337,6 +371,7 @@ function ScanPage(props) {
         })
         console.log("new orientation")
         app.setApp({...temp})
+        upload(temp)
     }
 
     const changeOrientation = ()=>{
@@ -355,6 +390,7 @@ function ScanPage(props) {
         })
         console.log("new orientation")
         app.setApp({...temp})
+        upload(temp)
     }
 
     return(
@@ -373,6 +409,7 @@ function ScanPage(props) {
                 </div>
             }
             {scanning?<Loader text="Scanning..." />:""}
+            {loading?<Loader text="hold on..." />:""}
             {!hide?<button onClick={()=>{
                 setCreate(true)
                 window.scroll(0,0)

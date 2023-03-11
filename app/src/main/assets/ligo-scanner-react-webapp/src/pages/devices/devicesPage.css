@@ -6,10 +6,13 @@
     align-items: center;
     /* padding-top: 20px; */
     gap: 10px;
-    height: calc(100vh - var(--navbarHeight));
+    /* height: calc(100vh - var(--navbarHeight)); */
     margin-top: calc(var(--navbarHeight));
     margin-bottom: 50px;
     position: relative;
+    animation: appear 1s normal forwards;
+    overflow-x: hidden;
+    /* overflow-y: hidden; */
 
 }
 
@@ -23,11 +26,70 @@
     border-color: var(--gray);
 }
 
+
+
+.devicesContainer {
+    scroll-snap-type: x mandatory;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    overflow-x: scroll;
+    /* scroll-padding: 0 50%; */
+    gap: 10px;
+    width: 100%;
+    /* overflow-y: hidden; */
+}
+
+.device {
+    scroll-snap-align: center;
+    width: 100%;
+    min-width: 100%;
+    margin-right: 3rem;
+    /* height: 500px; */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 50px;
+    /* overflow-y: hidden; */
+}
+.device > h4 {
+    font-weight: 100;
+}
+
+.device > i {
+    /* transform: translate(); */
+    font-size: 50px;
+    font-weight: 100;
+    color: var(--gray);
+    animation: swipeDemo 2s 1s normal forwards infinite;
+    margin-top: 10px;
+}
+
+
+.deviceInfo {
+    transform: translate(0, 500%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 1px solid var(--primaryColor);
+    border-radius: 2rem;
+    width: 90%;
+    background-color: var(--primaryColor);
+    animation: slideUp 0.5s 0.5s normal forwards;
+}
+
+.deviceInfo > h3, .deviceInfo > h4 {
+    font-weight: 100;
+    text-align: center;
+    line-height: 30px;
+    padding: 15px;
+    color: var(--white);
+}
 .application-info {
     display: flex;
     align-items: flex-start;
     flex-direction: column;
-    position: relative;
+    /* position: fixed; */
     bottom: 20px;
     margin-top: 20px;
     margin-bottom: 20px;
@@ -41,4 +103,14 @@
     text-align: left;
     color: var(--gray);
     /* border-bottom: 1px solid var(--gray); */
+}
+
+.devicesPage > button {
+
+}
+
+@keyframes swipeDemo {
+    0%{transform: translate(50px);}
+    
+    100%{transform: translate(-50px);}
 }

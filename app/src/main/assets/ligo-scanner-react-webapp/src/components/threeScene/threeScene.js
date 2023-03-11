@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import "./threeScene.css"
-import * as THREE from "three"
+// import * as THREE from "three"
 import { MTLLoader, OBJLoader } from "three-obj-mtl-loader";
 import dice from "./dice.jpg"
 

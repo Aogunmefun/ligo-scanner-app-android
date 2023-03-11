@@ -49,11 +49,14 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.6'
 
 
+
 //    implementation 'com.mbientlab:metawear:3.8.1'
     implementation project(path: ':mbientlab')
 //    implementation 'com.mbientlab.bletoolbox:scanner:0.3.1'
     implementation project(path: ':mbientlab')
-    implementation project(path: ':opencv')
+
+
+
 
 
     testImplementation 'junit:junit:4.13.2'

@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useContext } from "react";
 import "./drillhole.css"
 import ScanComponent from "../scanComponent/scanComponent";
-import ImuPage from "../../pages/imu/imuPage";
+// import ImuPage from "../../pages/imu/imuPage";
 import Camera from "../camera/camera";
 import { OpenCvProvider } from "opencv-react";
 import { Session } from "../../app";
+import Loader from "../../components/loader/loader";
+import Modal from "../../components/modal/modal";
 
 
 function DrillHole(props) {
@@ -24,7 +26,12 @@ function DrillHole(props) {
     const [roughScan, setRoughScan] = useState(false)
     const [roughindex, setRoughIndex] = useState(null)
 
+    const [modal, setModal] = useState({state:false, text:""})
+    const [loading, setLoading] = useState(false)
+
     const app = useContext(Session)
+
+
     
     useEffect(()=>{
         // console.log(document.querySelector(".drillhole").scrollHeight)
@@ -38,6 +45,22 @@ function DrillHole(props) {
         }
         
     })
+
+    const upload = (temp)=>{
+        setLoading(true)
+        axios({
+            url:"https://api.alphaspringsedu.com/ligo-upload",
+            method:"POST",
+            headers:{"Content-Type":"application/json"},
+            data:{
+                email:app.app.email,
+                data:temp
+            }
+        }).then((res)=>{
+            setLoading(false)
+            app.setApp(res.data.user)
+        }).catch((e)=>setModal({state:true, text:e.message}))
+    }
 
     
     const changeInterval = (ev)=>{
@@ -108,12 +131,14 @@ function DrillHole(props) {
         }
         console.log(temp)
         app.setApp({...temp})
+        upload(temp)
     }
 
     const changeRoughness = (index, roughness)=>{
         let temp = app.app
         temp.drillholes[app.app.active].roughness[index].roughness = roughness
         app.setApp({...temp})
+        upload(temp)
     }
 
     const enableCamera = ()=>{
@@ -266,6 +291,15 @@ function DrillHole(props) {
 
     return(
         <div className="drillhole">
+        {loading?<Loader text="..." />:""}
+        {
+                modal.state?
+                <Modal
+                    text={modal.text}
+                    setModal={setModal}
+                />  
+                :""
+            }
             {
                 props.hole&&!angleScan&&!roughScan?
                 

@@ -3,14 +3,16 @@ import "./orientationDevice.css"
 import logo from "./structures.png"
 import Loader from "../loader/loader"
 import { Session } from "../../app"
-import ThreeScene from "../threeScene/threeScene"
+import axios from "axios"
+import Modal from "../modal/modal";
 
 function OrientationDevice(props) {
     
     const [scanning, setScanning] = useState(false)
     const [scannedDevices, setScannedDevices] = useState([])
     const [connecting, setConnecting] = useState(false)
-    
+    const [loading, setLoading] = useState(false)
+    const [modal, setModal] = useState({state:false, text:""})
 
     const app = useContext(Session)
 
@@ -22,8 +24,26 @@ function OrientationDevice(props) {
         window.addEventListener('orientationFailedConnect', handleFailedConnect)
     }, [])
 
+
+    const upload = (temp)=>{
+        setLoading(true)
+        axios({
+            url:"https://api.alphaspringsedu.com/ligo-upload",
+            method:"POST",
+            headers:{"Content-Type":"application/json"},
+            data:{
+                email:app.app.email,
+                data:temp
+            }
+        }).then((res)=>{
+            setLoading(false)
+            app.setApp(res.data.user)
+        }).catch((e)=>setModal({state:true, text:e.message}))
+    }
+
     const startScan = ()=>{
         setScanning(true)
+        // Android.disconnect()
         Android.orientationScan()
     }
 
@@ -56,6 +76,7 @@ function OrientationDevice(props) {
         // app.device.type = connectedDevice[0].type
         temp.device.paired = true
         app.setApp({...temp})
+        upload(temp)
         setConnecting(false)
         setScanning(false)
         
@@ -68,6 +89,7 @@ function OrientationDevice(props) {
         temp.device.active = null
         temp.device.paired = false
         app.setApp({...temp})
+        upload(temp)
     }
 
     const disconnect = ()=>{
@@ -97,7 +119,16 @@ function OrientationDevice(props) {
 
     return(
         <div className="orientationDevice">
+        {
+                modal.state?
+                <Modal
+                    text={modal.text}
+                    setModal={setModal}
+                />  
+                :""
+            }
             {connecting?<Loader text={props.paired?"Disconnecting...":"Connecting..."} />:""}
+            {loading?<Loader text="hold on..." />:""}
             
                 <img width="50%" src={logo} alt="" />
                                         

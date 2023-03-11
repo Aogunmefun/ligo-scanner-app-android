@@ -1,0 +1,61 @@
+@import url("../../index.css");
+
+.loginPage{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    height: 100vh;
+    /* padding-top: 50px; */
+}
+
+.loginDisplay {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    /* height: 600px; */
+    width: 100%;
+}
+
+.loginForm {
+    transform: translate(0,500%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    gap: 30px;
+}
+
+.loginFormAppear {
+    animation: slideUp 0.3s 0.2s normal forwards;
+}
+
+.loginForm > button {
+    color: var(--gray);
+    transition: all 0.5s;
+}
+
+
+.loginFields {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 90%;
+    gap: 30px;
+}
+
+.loginFields > input {
+    width: 90%;
+    box-shadow: 0px 0px 5px var(--gray);
+}
+.loginFields > * {
+    text-align: center;
+    color: var(--gray);
+    
+}
+.loginFields > h2 {
+    font-size: 15px;
+}

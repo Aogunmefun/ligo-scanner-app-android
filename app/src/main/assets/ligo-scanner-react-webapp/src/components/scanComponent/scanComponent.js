@@ -178,7 +178,7 @@ function ScanComponent(props) {
     
 
     return(
-        <div  className="scanComponent">
+        <div  style={{"--animationOrder": props.index}}  className="scanComponent">
             <div className="holeScan">
                 {
                     edit?

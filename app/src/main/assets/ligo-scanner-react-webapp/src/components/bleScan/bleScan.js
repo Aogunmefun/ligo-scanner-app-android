@@ -5,6 +5,8 @@ import "./bleScan.css"
 import logo from "./colors.png"
 import Loader from "../../components/loader/loader";
 import { Session } from "../../app";
+import axios from "axios";
+import Modal from "../modal/modal";
 
 function BLEScan(props) {
     
@@ -13,7 +15,25 @@ function BLEScan(props) {
     const [scanning, setScanning] = useState(false)
     const [connecteddevice, setConnectedDevice] = useState()
     const [connecting, setConnecting] = useState(false)
+    const [loading, setLoading] = useState(false)
     const app = useContext(Session)
+    const [modal, setModal] = useState({state:false, text:""})
+
+    const upload = (temp)=>{
+        setLoading(true)
+        axios({
+            url:"https://api.alphaspringsedu.com/ligo-upload",
+            method:"POST",
+            headers:{"Content-Type":"application/json"},
+            data:{
+                email:app.app.email,
+                data:temp
+            }
+        }).then((res)=>{
+            setLoading(false)
+            app.setApp(res.data.user)
+        }).catch((e)=>setModal({state:true, text:e.message}))
+    }
 
     useEffect(()=>{
         
@@ -40,7 +60,7 @@ function BLEScan(props) {
     }
 
     const handleConnecting = (device)=>{
-
+        console.log("Setting connecting to true")
         setConnecting(true)
     }
 
@@ -59,6 +79,7 @@ function BLEScan(props) {
         // app.device.type = connectedDevice[0].type
         temp.device.paired = true
         app.setApp(temp)
+        upload(temp)
         setConnecting(false)
         setScanning(false)
         
@@ -72,6 +93,7 @@ function BLEScan(props) {
         temp.device.active = null
         temp.device.paired = false
         app.setApp({...temp})
+        upload(temp)
         setConnecting(false)
     }
 
@@ -83,13 +105,24 @@ function BLEScan(props) {
 
     const scan = ()=>{
         console.log("About to scan")
+        // Android.orientationDisconnect()
         Android.scan()
         setScanning(true)
+        
     }
 
     return(
         <div className="bleScanPage" style={{pointerEvents:`${connecting?"none":""}`}}>
+        {
+                modal.state?
+                <Modal
+                    text={modal.text}
+                    setModal={setModal}
+                />  
+                :""
+            }
             {connecting?<Loader text={app.app.device.paired?"Disconnecting...":"Connecting..."} />:""}
+            {loading?<Loader text="hold on..." />:""}
             <img width="30%" src={logo} alt="" />
             {/* <h1>{!app.app.device.paired?"Pair Device":"Device Paired"}</h1> */}
             {/* <h1>{"Count: " + scannedDevices.length}</h1> */}
