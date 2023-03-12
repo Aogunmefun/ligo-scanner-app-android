@@ -8,31 +8,13 @@ import DevicesPage from "./pages/devices/devicesPage";
 import ImuPage from "./pages/imu/imuPage";
 import Splash from "./components/splash/splash";
 import LoginPage from "./pages/login/loginPage";
+import Modal from "./components/modal/modal";
 
 export const Session = createContext()
 
 
 
 function App(props) {
-
-    const [app, setApp] = useState({
-        device: {
-            active: null,
-            name: null,
-            address: null,
-            // type: null,
-            paired: false
-        },
-        endpoint:"",
-        navbar:false,
-        cv:null,
-        active: 0,
-        sidenavOpen: false,
-        timeStamp:0,
-        rescan:false,
-        rescanindex:null,
-        user:null
-    })
 
     // const [app, setApp] = useState({
     //     device: {
@@ -42,6 +24,7 @@ function App(props) {
     //         // type: null,
     //         paired: false
     //     },
+    //     connected:true,
     //     endpoint:"",
     //     navbar:false,
     //     cv:null,
@@ -50,128 +33,35 @@ function App(props) {
     //     timeStamp:0,
     //     rescan:false,
     //     rescanindex:null,
-    //     drillholes: [
-    //         {
-    //             config:{
-    //                 name: "AA10",
-    //                 interval: 10,
-    //                 start: 50,
-    //                 expanded: true,
-                    
-    //             },
-    //             data:[
-    //                 {
-    //                     depth: 50,
-    //                     color: {
-    //                         r: 123,
-    //                         g: 5,
-    //                         b:150
-    //                     },
-    //                     velocity: 2302
-    //                 },
-    //                 {
-    //                     depth: 60,
-    //                     color: {
-    //                         r: 2,
-    //                         g: 5,
-    //                         b:150
-    //                     },
-    //                     velocity: 3232
-    //                 },
-                
-                    
-                    
-    //             ],
-    //             velocity: [
-    //                 {
-    //                     depth: 50,
-    //                     velocity: 2302
-    //                 },
-    //                 {
-    //                     depth: 60,
-    //                     velocity: 3232
-    //                 },
-    //                 {
-    //                     depth: 70,
-    //                     velocity: 4821
-    //                 },
-                 
-    //             ],
-    //             orientation: [
-    //                 {
-    //                     depth: 50,
-    //                     angle: {
-    //                         x: 0.35,
-    //                         y: 0.25,
-    //                         z:0.55
-    //                     }
-    //                 },
-    //             ],
-    //             roughness: [
-                    
-    //             ]
-    //         },
-    //         {
-    //             config:{
-    //                 name: "328",
-    //                 interval: 10,
-    //                 start: 50,
-    //                 expanded: true,
-                    
-    //             },
-    //             data:[
-    //                 {
-    //                     depth: 50,
-    //                     color: {
-    //                         r: 123,
-    //                         g: 5,
-    //                         b:150
-    //                     },
-    //                     velocity: 20405
-    //                 },
-    //                 {
-    //                     depth: 60,
-    //                     color: {
-    //                         r: 2,
-    //                         g: 5,
-    //                         b:150
-    //                     },
-    //                     velocity: 6853
-    //                 },
-    //                 {
-    //                     depth: 70,
-    //                     color: {
-    //                         r: 123,
-    //                         g: 50,
-    //                         b:2
-    //                     },
-    //                     velocity: 4521
-    //                 },
-                    
-    //             ],
-    //             velocity: [
-    //                 {
-    //                     depth: 50,
-    //                     velocity: 20405
-    //                 },
-    //                 {
-    //                     depth: 60,
-    //                     velocity: 6853
-    //                 },
-    //                 {
-    //                     depth: 70,
-    //                     velocity: 4521
-    //                 },
-    //             ],
-    //             orientation: [
-
-    //             ],
-    //             roughness: [
-                    
-    //             ]
-    //         }
-    //     ]
+    //     user:null
     // })
+    const [modal, setModal] = useState({state:false, text:""})
+    const [refresh, setRefresh] = useState(false)
+
+    const [app, setApp] = useState({
+        device: {
+            active: "colorimeter",
+            name: null,
+            address: null,
+            // type: null,
+            paired: true
+        },
+        connected:true,
+        endpoint:"",
+        navbar:true,
+        cv:null,
+        active: 0,
+        sidenavOpen: false,
+        timeStamp:0,
+        rescan:false,
+        rescanindex:null,
+        user:{
+            email:"deoluutah@yahoo.com",
+            drillholes: [
+            ]
+        }
+        
+    })
     
     useEffect(()=>{
         const script = document.createElement('script');
@@ -184,21 +74,68 @@ function App(props) {
             setApp(temp)
         }
         document.body.appendChild(script);
+        window.addEventListener('noDevices', noDevices)
+        
+
         return ()=>{
             document.body.removeChild(script);
         }
         
     },[])
-
-
-
     
+    useEffect(()=>{
+        // console.log("refresh", app.user.drillholes)
+        window.addEventListener('InternetConnected', connected)
+        window.addEventListener('InternetDisconnected', disconnected)
+        return ()=>{
+            window.removeEventListener('InternetConnected', connected)
+            window.removeEventListener('InternetDisconnected', disconnected)
+        }
+    })
+
+    const connected = ()=>{
+        // console.log("CONNECTED", app.user.drillholes)
+        setApp({
+            ...app,
+            connected:true
+        })
+        setModal({state:true, text:"Connection re-established. All features available"})
+    }
+
+    const disconnected = ()=>{
+        // console.log("DISCONNECTED", app.user.drillholes)
+        setApp({
+            ...app,
+            connected:false
+        })
+        setModal({state:true, text:"No connection detected. Please re-connect to keep data up to date and utilize full app capabilities"})
+    }
+
+
+
+    const noDevices = ()=>{
+        setModal({state: true, text:"No devices connected. Please select a device on the devices page"})
+        let temp = app.app
+        temp.device.name = null
+        temp.device.address = null
+        temp.device.active = null
+        temp.device.paired = false
+        app.setApp({...temp})
+    }
     
 
     return (
         // <BrowserRouter>
         <HashRouter>
             {app.navbar?<Navbar />:""}
+            {
+                modal.state?
+                <Modal
+                    text={modal.text}
+                    setModal={setModal}
+                />  
+                :""
+            }
             <Session.Provider value={{app:app, setApp:setApp}}>
                 <Routes>
                 
@@ -211,9 +148,9 @@ function App(props) {
                     
                 </Routes>
             </Session.Provider>
-            
+            {/* <button onClick={()=>Android.isPaired()}>Get Paired Devices</button> */}
         </HashRouter>
-        // </BrowserRouter>
+        // {/* </BrowserRouter> */}
     )
 }
 

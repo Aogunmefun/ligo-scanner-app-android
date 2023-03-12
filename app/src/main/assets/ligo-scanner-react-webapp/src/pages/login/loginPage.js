@@ -16,7 +16,7 @@ function LoginPage() {
     const [stage, setStage] = useState(1)
     const [submitEmail, setSubmitEmail] = useState(false)
     const [loading, setLoading] = useState(false)
-    const [modal, setModal] = useState({state:false, text:""})
+    const [modal, setModal] = useState({state:false, text:"", close:true})
     const [code, setCode] = useState([])
 
     let navigate = useNavigate()
@@ -24,7 +24,19 @@ function LoginPage() {
 
     useEffect(()=>{
         app.setApp({...app.app, navbar:false})
+        
     },[])
+
+    useEffect(()=>{
+        if (!app.app.connected) {
+            setModal({state:true, text:"Connection not established. Login disabled", close:false})
+            console.log("No internet")
+        }
+        else {
+            setModal({state:false, text:"Connection not established. Login disabled", close:true})
+            console.log("We have internet")
+        }
+    }, [app.app.connected])
 
     const handleEmail = (ev)=>{
         setEmail(ev.target.value.toLowerCase())
@@ -34,7 +46,7 @@ function LoginPage() {
     }
 
     const findUser = (ev)=>{
-        // ev.preventDefault()
+        ev.preventDefault()
         setSubmitEmail(false)
         setLoading(true)
         console.log("yo")
@@ -43,26 +55,18 @@ function LoginPage() {
             method:"POST",
             headers:{"Content-Type":"application/json"},
             data:{
-                // email:email
-                email:"deoluutah@yahoo.com"
+                email:email
+                // email:"deoluutah@yahoo.com"
             }
         }).then((res)=>{
             console.log(res.data)
-            // setStage(2)
-            // setLoading(false)
-            // setSubmitEmail(false)
-            // if (res.data.res===null) {
-            //     setModal({state:true, text:"User doesn't Exist. However, we created a new user using this email"})
+            setStage(2)
+            setLoading(false)
+            setSubmitEmail(false)
+            if (res.data.res===null) {
+                setModal({state:true, text:"User doesn't Exist. However, we created a new user using this email"})
 
-            // }
-            navigate("/devices")
-            app.setApp({
-                ...app.app,
-                user: {
-                    email: res.data.user.email,
-                    drillholes: res.data.user.drillholes
-                }
-            })
+            }
             
         }).catch((e)=>{
             console.log("error")
@@ -98,7 +102,14 @@ function LoginPage() {
             }
             else {
                 navigate("/devices")
-                app.setApp(res.data.res)
+                console.log(res.data)
+                app.setApp({
+                    ...app.app,
+                    user: {
+                        email: res.data.res.email,
+                        drillholes: res.data.res.drillholes
+                    }
+                })
             }
             setLoading(false)
         })
@@ -106,7 +117,7 @@ function LoginPage() {
 
     return(
         <div className="loginPage">
-        {modal.state?<Modal text={modal.text} setModal={setModal} />:""}
+        {modal.state?<Modal text={modal.text} setModal={setModal} close={modal.close} />:""}
             <div className="loginDisplay">
                 
                 <Splash findUser={findUser} begin={begin} setBegin={setBegin} />

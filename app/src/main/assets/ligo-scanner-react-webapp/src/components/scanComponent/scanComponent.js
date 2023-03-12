@@ -197,6 +197,9 @@ function ScanComponent(props) {
                     renderScan()
                     
                 }
+                {
+                    edit?"": <i className="material-icons">{props.scan.synced?"done":"warning"}</i>
+                }
                 
                 {/* <h5>{scan.color?"R:"+scan.color.r+" G:"+scan.color.g+" B:"+scan.color.b:""}</h5> */}
             </div>

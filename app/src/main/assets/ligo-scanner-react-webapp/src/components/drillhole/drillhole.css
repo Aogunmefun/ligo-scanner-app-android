@@ -111,12 +111,12 @@
 }
 
 .scanComponent {
-    transform: translate(-500%);
+    /* transform: translate(-500%);
     animation-name: slideInright;
     animation-duration: 0.5s;
     animation-fill-mode: forwards;
     animation-direction: normal;
-    animation-delay: calc(var(--animationOrder) * 0.1s);
+    animation-delay: calc(var(--animationOrder) * 0.1s); */
 }
 
 .scanComponent:nth-child(i) {

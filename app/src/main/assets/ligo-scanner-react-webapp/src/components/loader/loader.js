@@ -6,7 +6,7 @@ function Loader(props) {
 
 
     return(
-        <div style={{display:`${props.loading?"":"none"}`}} className="loader">
+        <div style={{display:`${props.loading||props.loading===null||props.loading===undefined?"":"none"}`}} className="loader">
             <DotLoader
                 color={"#1DA0A5"}
                 loading = {true}

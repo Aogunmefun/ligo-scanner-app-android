@@ -38,13 +38,13 @@ function DrillHole(props) {
         
         if (!editinfo) {
             window.scroll({
-                top: 500,
+                top: document.querySelector(".drillhole").scrollHeight,
                 left:0,
                 behavior: 'smooth'
             })
         }
         
-    })
+    }, [props.scanning])
 
     const upload = (temp)=>{
         setLoading(true)
@@ -147,7 +147,7 @@ function DrillHole(props) {
     }
 
     const render = ()=>{
-        console.log(props.device)
+        // console.log(props.device)
         if(props.device==="colorimeter"){
             return(
                 <>

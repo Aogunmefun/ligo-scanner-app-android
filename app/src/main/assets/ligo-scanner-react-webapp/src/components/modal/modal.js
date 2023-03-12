@@ -7,7 +7,7 @@ function Modal(props) {
     return(
         <div className="modal">
             <h5>{props.text}</h5>
-            <button onClick={()=>{props.setModal({state:false, text:""})}}>Close</button>
+            {props.close===null||props.close===undefined||props.close===true?<button onClick={()=>{props.setModal({state:false, text:""})}}>Close</button>:""}
         </div>
     )
 }

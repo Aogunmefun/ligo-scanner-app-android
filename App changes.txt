@@ -1,15 +1,21 @@
 make all files local - Done
 
-Check for device connectivity before a scan/Tell user if they are connected to a device or not
+Register phone so that user only has to log in once. Basically can you pass the phones unique id or something so that if they use
+that phone again, all they need is their email and we can recognize that they're loggin in from that phone
 
+Check for device connectivity before a scan/Tell user if they are connected to a device or not - Done
 
-Upload data asyncronously as to not slow down the user as much ( Display checkmark next to each scan that's synced up)
+Upload data asyncronously as to not slow down the user as much ( Display checkmark next to each scan that's synced up) - Done
 
 Check for internet connection before attempting upload. If no internet connection, let the user know and don't bother uploading until
-the user indicates that they're connected.
+the user indicates that they're connected. - Done
 
-Automatically detect when the user is connected to internet to re-start data upload
+Automatically detect when the user is connected to internet to re-start data upload - Done
 
-Before scanning for device, theck for connectivity with other devices and shut them down
+Before scanning for device, theck for connectivity with other devices and shut them down - Done
 
 Ability to generate and store csv files locally for them to pull out with their computer
+
+Archive button should not delete drillholes, but simply archive them. It's only for presentation purposes so that you can filter out drillholes
+
+Lock the other devices for now

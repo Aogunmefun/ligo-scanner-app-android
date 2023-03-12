@@ -13,6 +13,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkCapabilities;
+import android.net.NetworkRequest;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -23,6 +27,7 @@ import android.view.MenuItem;
 import android.webkit.ConsoleMessage;
 import android.webkit.JavascriptInterface;
 import android.webkit.PermissionRequest;
+import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -32,6 +37,7 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.core.app.ActivityCompat;
@@ -51,6 +57,7 @@ import com.nix.nixsensor_lib.NixScannedSpectralData;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Set;
 
 import bolts.Continuation;
 import bolts.Task;
@@ -100,8 +107,8 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
             "D75/2°",
             "D75/10°"};
 
-//    private BluetoothManager blemanager = getSystemService(BluetoothManager.class);
-        private BluetoothAdapter bleadapter = null;
+    //    private BluetoothManager blemanager = getSystemService(BluetoothManager.class);
+    private BluetoothAdapter bleadapter = null;
     private BluetoothLeScanner blescanner = null;
     private boolean scanning = false;
     private static final long scanDuration = 10000;
@@ -134,7 +141,21 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         bleadapter = blemanager.getAdapter();
         blescanner = bleadapter.getBluetoothLeScanner();
 
+        // Get network updates
+        NetworkRequest networkRequest = new NetworkRequest.Builder()
+                .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+                .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
+                .addTransportType(NetworkCapabilities.TRANSPORT_CELLULAR)
+                .build();
 
+        ConnectivityManager connectivityManager =
+                (ConnectivityManager) getSystemService(ConnectivityManager.class);
+        connectivityManager.requestNetwork(networkRequest, networkCallback);
+
+
+
+
+        // Webview
 
         webView = (WebView) findViewById(R.id.webview);
         webView.setWebChromeClient(new WebChromeClient() {
@@ -178,6 +199,99 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
 //        webView.addJavascriptInterface(new WebAppInterface(this), "Android");
 
     }
+
+    @JavascriptInterface
+    public int pairedDevices() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return 0;
+        } else if ((sensor == null) && (imu == null)) {
+            return 1;
+        } else if (sensor != null) {
+            return 2;
+        } else if (imu != null) {
+            return 3;
+        } else {
+            return 4;
+        }
+
+
+    }
+
+    @JavascriptInterface
+    public void isPaired() {
+        BluetoothAdapter mBtAdapter = BluetoothAdapter.getDefaultAdapter();
+
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
+        Set<BluetoothDevice> pairedDevices = mBtAdapter.getBondedDevices();
+        Log.d("Tyring", String.valueOf(pairedDevices.size()));
+        if (pairedDevices.size() > 0) {
+            Log.d("Tyring", "Found some");
+            for (BluetoothDevice d: pairedDevices) {
+                String deviceName = d.getName();
+                String macAddress = d.getAddress();
+                Log.i("Paired Devices", "paired device: " + deviceName + " at " + macAddress);
+                // do what you need/want this these list items
+            }
+        }
+    }
+
+
+    private ConnectivityManager.NetworkCallback networkCallback = new ConnectivityManager.NetworkCallback() {
+        @Override
+        public void onAvailable(@NonNull Network network) {
+
+            super.onAvailable(network);
+            Log.d("Connected", "Connected!!");
+            webView.post(new Runnable() {
+                @Override
+                public void run() {
+                    Log.d("Posting", "Connected Posted");
+                    webView.evaluateJavascript("window.dispatchEvent(new CustomEvent('InternetConnected'))", null);
+                }
+            });
+//            webView.post(new Runnable() {
+//                @Override
+//                public void run() {
+//                    webView.evaluateJavascript("window.dispatchEvent(new CustomEvent('scanning'))", null);
+//                }
+//            });
+
+        }
+
+        @Override
+        public void onLost(@NonNull Network network) {
+            super.onLost(network);
+            Log.d("DisConnected", "No!!!!");
+            webView.post(new Runnable() {
+                @Override
+                public void run() {
+                    webView.evaluateJavascript("window.dispatchEvent(new CustomEvent('InternetDisconnected'))", null);
+                }
+            });
+        }
+
+        @Override
+        public void onCapabilitiesChanged(@NonNull Network network, @NonNull NetworkCapabilities networkCapabilities) {
+            super.onCapabilitiesChanged(network, networkCapabilities);
+            final boolean unmetered = networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_METERED);
+        }
+    };
 
 
 
@@ -301,7 +415,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
             webView.post(new Runnable() {
                 @Override
                 public void run() {
-                    webView.evaluateJavascript("window.dispatchEvent(new CustomEvent('colorimeterConnected', {detail:{address:'" + sensor.getAddress() + "'}}))", null);
+                    webView.evaluateJavascript("window.dispatchEvent(new CustomEvent('colorimeterConnected', {detail:{name: '" + sensor.getName() + "', address:'" + sensor.getAddress() + "', type:'" + "colorimeter" + "'}}))", null);
                 }
             });
 
@@ -329,6 +443,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         @Override
         public void onDeviceDisconnected() {
             Log.d("Disconnected", "Device Disconnected");
+            sensor = null;
             webView.post(new Runnable() {
                 @Override
                 public void run() {
@@ -373,8 +488,10 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
     public boolean onKeyUp(int keyCode, KeyEvent event) {
 
         if (keyCode == 24) {
+
             if (sensor != null) {
-                Log.d("key pressed", String.valueOf(keyCode));
+                Log.d("key pressed", sensor.getName());
+//                Log.d("key pressed", String.valueOf(keyCode));
                 webView.post(new Runnable() {
                     @Override
                     public void run() {
@@ -383,6 +500,14 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
                 });
                 scanColor();
                 return true;
+            }
+            else {
+                webView.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        webView.evaluateJavascript("window.dispatchEvent(new CustomEvent('noDevices'))", null);
+                    }
+                });
             }
 
 

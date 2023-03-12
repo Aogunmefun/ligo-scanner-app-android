@@ -12,7 +12,7 @@ function DrillHoles(props) {
     useEffect(()=>{
        
         window.scroll({
-            top: document.querySelector(".drillholes").scrollHeight,
+            top: document.querySelectorAll(".scanPage").scrollHeight,
             left:0,
             behavior: 'smooth'
         })
@@ -60,6 +60,7 @@ function DrillHoles(props) {
                                 <div style={{backgroundColor:`${scan.color?"rgb("+scan.color.r+","+scan.color.g+","+scan.color.b+")":""}`}} className="holeScanColor">
                                     
                                 </div>
+                                <i className="material-icons">{scan.synced?"done":"warning"}</i>
                                 {/* <h5>{scan.color?"R:"+scan.color.r+" G:"+scan.color.g+" B:"+scan.color.b:""}</h5> */}
                             </div>
                         )
@@ -172,6 +173,10 @@ function DrillHoles(props) {
                     </div>
                     
                     {renderHole()}
+
+                    
+                    
+                
                     
                 </div>
 

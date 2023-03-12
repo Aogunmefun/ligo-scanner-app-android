@@ -43,8 +43,19 @@ function BLEScan(props) {
         window.addEventListener('colorimeterConnected', handleConnected)
         window.addEventListener('colorimeterDisconnected', handleDisconnected)
         
+        if (Android.pairedDevices() === 1) {
+            // setModal({state: true, text: "You're not connected to any devices"})
+            let temp = app.app
+            temp.device.name = null
+            temp.device.address = null
+            temp.device.active = null
+            temp.device.paired = false
+            app.setApp({...temp})
+        }
 
     }, [])
+
+    
 
     
 
@@ -67,19 +78,11 @@ function BLEScan(props) {
     const handleConnected = (device)=>{
         let temp = app.app
         console.log("blescan", device.detail.type)
-        console.log("Scanned Devices", JSON.stringify(scannedDevices[0]))
-        // console.log("Remaining element", JSON.stringify(scannedDevices.filter((storedDevice,index)=>{
-        //     console.log("Connected Device Address", device.detail.address, "stored address", storedDevice.address)
-        //     return storedDevice.address===device.detail.address
-        // })))
-        let connectedDevice = scannedDevices.filter((storedDevice,index)=>storedDevice.address===device.detail.address)
-        temp.device.name = connectedDevice[0].name
-        temp.device.address = connectedDevice[0].address
+        temp.device.name = device.detail.name
+        temp.device.address = device.detail.address
         temp.device.active = "colorimeter"
-        // app.device.type = connectedDevice[0].type
         temp.device.paired = true
         app.setApp(temp)
-        // upload(temp)
         setConnecting(false)
         setScanning(false)
         
@@ -100,20 +103,42 @@ function BLEScan(props) {
     const disconnect = ()=>{
         setConnecting(true)
         Android.disconnect()
+        setScannedDevices([])
     }
 
 
     const scan = ()=>{
-        console.log("About to scan")
-        // Android.orientationDisconnect()
-        Android.scan()
-        setScanning(true)
+        console.log("Get Pairedd Devices", Android.pairedDevices())
+        if ((Android.pairedDevices() === 0)) {
+            setModal({state: true, text: "Bluetooth not enabled"})
+        }
+        else if (Android.pairedDevices() === 1) {
+            console.log("About to scan")
+            // Android.orientationDisconnect()
+            Android.scan()
+            setScanning(true)
+            setTimeout(() => {
+                setScanning(false)
+            }, 20000);
+        }
+        else {
+            if (Android.pairedDevices()===2) {
+                setModal({state:true, text:"Already connected to Colorimeter. Please disconnect first"})
+            }
+            else if (Android.pairedDevices()===3) {
+                setModal({state:true, text:"Already connected to IMU. Please disconnect first"})
+            }
+            else {
+                setModal({state:true, text:"Unexpected error. Try again"})
+            }
+        }
+        
         
     }
 
     return(
         <div className="bleScanPage" style={{pointerEvents:`${connecting?"none":""}`}}>
-        {
+            {
                 modal.state?
                 <Modal
                     text={modal.text}

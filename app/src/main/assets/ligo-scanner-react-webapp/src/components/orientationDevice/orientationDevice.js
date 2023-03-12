@@ -22,6 +22,16 @@ function OrientationDevice(props) {
         window.addEventListener('orientationConnected', handleConnected)
         window.addEventListener('orientationDisconnect', handleDisconnected)
         window.addEventListener('orientationFailedConnect', handleFailedConnect)
+
+        if (Android.pairedDevices() === 1) {
+            // setModal({state: true, text: "You're not connected to any devices"})
+            let temp = app.app
+            temp.device.name = null
+            temp.device.address = null
+            temp.device.active = null
+            temp.device.paired = false
+            app.setApp({...temp})
+        }
     }, [])
 
 
@@ -42,9 +52,32 @@ function OrientationDevice(props) {
     }
 
     const startScan = ()=>{
-        setScanning(true)
-        // Android.disconnect()
-        Android.orientationScan()
+        // setModal({state: true, text: "Bluetooth not enabled"})
+        if ((Android.pairedDevices() === 0)) {
+            setModal({state: true, text: "Bluetooth not enabled"})
+        }
+        else if (Android.pairedDevices() === 1) {
+            console.log("About to scan")
+            // Android.orientationDisconnect()
+            setScanning(true)
+            // Android.disconnect()
+            Android.orientationScan()
+            setTimeout(() => {
+                setScanning(false)
+            }, 20000);
+        }
+        else {
+            if (Android.pairedDevices()===2) {
+                setModal({state:true, text:"Already connected to Colorimeter. Please disconnect first"})
+            }
+            else if (Android.pairedDevices()===3) {
+                setModal({state:true, text:"Already connected to IMU. Please disconnect first"})
+            }
+            else {
+                setModal({state:true, text:"Unexpected error. Try again"})
+            }
+        }
+        
     }
 
     const stopScanning = ()=>{
@@ -186,7 +219,7 @@ function OrientationDevice(props) {
                 
                 :""
             }
-            {scanning?<button onClick={()=>stopScanning()}>Stop Scanning</button>:""}
+            {/* {scanning?<button onClick={()=>stopScanning()}>Stop Scanning</button>:""} */}
 
         </div>
     )

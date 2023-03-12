@@ -20,6 +20,11 @@ function DevicesPage() {
         temp.navbar = true
         app.setApp({...temp})
         console.log(app.app)
+        window.scroll({
+            top:0,
+            left:0,
+            behavior: "smooth"
+        })
     },[])
 
     const upload = (temp)=>{
