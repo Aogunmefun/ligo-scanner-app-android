@@ -7,7 +7,7 @@
     align-items: center;
     padding-top: 20px;
     gap: 50px;
-    height: calc(100vh - var(--navbarHeight) - var(--scanPageTabs));
+    /* height: calc(100vh - var(--navbarHeight) - var(--scanPageTabs)); */
     margin-top: calc(var(--navbarHeight) + var(--scanPageTabs));
     /* margin-bottom: 50px; */
     position: relative;

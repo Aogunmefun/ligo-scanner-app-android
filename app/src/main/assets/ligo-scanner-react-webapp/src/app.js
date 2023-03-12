@@ -16,13 +16,35 @@ export const Session = createContext()
 
 function App(props) {
 
+    const [app, setApp] = useState({
+        device: {
+            active: null,
+            name: null,
+            address: null,
+            // type: null,
+            paired: false
+        },
+        connected:true,
+        endpoint:"",
+        navbar:false,
+        cv:null,
+        active: 0,
+        sidenavOpen: false,
+        timeStamp:0,
+        rescan:false,
+        rescanindex:null,
+        user:null
+    })
+    const [modal, setModal] = useState({state:false, text:""})
+    const [refresh, setRefresh] = useState(false)
+
     // const [app, setApp] = useState({
     //     device: {
-    //         active: null,
+    //         active: "colorimeter",
     //         name: null,
     //         address: null,
     //         // type: null,
-    //         paired: false
+    //         paired: true
     //     },
     //     connected:true,
     //     endpoint:"",
@@ -33,35 +55,89 @@ function App(props) {
     //     timeStamp:0,
     //     rescan:false,
     //     rescanindex:null,
-    //     user:null
-    // })
-    const [modal, setModal] = useState({state:false, text:""})
-    const [refresh, setRefresh] = useState(false)
-
-    const [app, setApp] = useState({
-        device: {
-            active: "colorimeter",
-            name: null,
-            address: null,
-            // type: null,
-            paired: true
-        },
-        connected:true,
-        endpoint:"",
-        navbar:true,
-        cv:null,
-        active: 0,
-        sidenavOpen: false,
-        timeStamp:0,
-        rescan:false,
-        rescanindex:null,
-        user:{
-            email:"deoluutah@yahoo.com",
-            drillholes: [
-            ]
-        }
+    //     user:{
+    //         email:"deoluutah@yahoo.com",
+    //         drillholes: [
+    //             {
+    //               "config": {
+    //                 "name": "5227",
+    //                 "interval": 1,
+    //                 "start": 1,
+    //                 "expanded": true
+    //               },
+    //               "data": [
+    //                 {
+    //                   "depth": 1,
+    //                   "color": {
+    //                     "r": "41",
+    //                     "g": "43",
+    //                     "b": "43"
+    //                   },
+    //                   "synced": true
+    //                 },
+    //                 {
+    //                   "depth": 2,
+    //                   "color": {
+    //                     "r": "41",
+    //                     "g": "43",
+    //                     "b": "43"
+    //                   },
+    //                   "synced": true
+    //                 },
+    //                 {
+    //                   "depth": 3,
+    //                   "color": {
+    //                     "r": "41",
+    //                     "g": "43",
+    //                     "b": "43"
+    //                   },
+    //                   "synced": true
+    //                 },
+    //                 {
+    //                   "depth": 4,
+    //                   "color": {
+    //                     "r": "41",
+    //                     "g": "43",
+    //                     "b": "43"
+    //                   },
+    //                   "synced": true
+    //                 },
+    //                 {
+    //                   "depth": 5,
+    //                   "color": {
+    //                     "r": "41",
+    //                     "g": "43",
+    //                     "b": "43"
+    //                   },
+    //                   "synced": true
+    //                 },
+    //                 {
+    //                   "depth": 6,
+    //                   "color": {
+    //                     "r": "41",
+    //                     "g": "43",
+    //                     "b": "43"
+    //                   },
+    //                   "synced": true
+    //                 },
+    //                 {
+    //                   "depth": 7,
+    //                   "color": {
+    //                     "r": "41",
+    //                     "g": "43",
+    //                     "b": "43"
+    //                   },
+    //                   "synced": true
+    //                 }
+    //               ],
+    //               "velocity": [],
+    //               "orientation": [],
+    //               "roughness": []
+    //             }
+    //           ]
+    //     }
         
-    })
+    // })
     
     useEffect(()=>{
         const script = document.createElement('script');

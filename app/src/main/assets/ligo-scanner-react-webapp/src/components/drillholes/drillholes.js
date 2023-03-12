@@ -12,7 +12,7 @@ function DrillHoles(props) {
     useEffect(()=>{
        
         window.scroll({
-            top: document.querySelectorAll(".scanPage").scrollHeight,
+            top: document.querySelectorAll(".drillholes")[props.index].scrollHeight,
             left:0,
             behavior: 'smooth'
         })
@@ -20,13 +20,15 @@ function DrillHoles(props) {
     }, [expanded])
 
     const handleExpand = (el)=> {
-        console.log(el.currentTarget.style.height)
-        el.currentTarget.parentElement.style.height = el.currentTarget.parentElement.style.height==="fit-content"?"150px":"fit-content"
-        window.scroll({
-            top: document.querySelector(".drillholes").scrollHeight,
-            left:0,
-            behavior: 'smooth'
-        })
+        setExpanded(!expanded)
+        // console.log(document.querySelectorAll(".drillholes")[props.index].scrollHeight)
+        // // console.log(el.currentTarget.style.height)
+        // // el.currentTarget.parentElement.style.height = el.currentTarget.parentElement.style.height==="fit-content"?"150px":"fit-content"
+        // window.scroll({
+        //     top: document.querySelectorAll(".drillholes")[props.index].scrollHeight,
+        //     left:0,
+        //     behavior: 'smooth'
+        // })
     }
 
     const changeName = (ev)=>{
@@ -136,14 +138,14 @@ function DrillHoles(props) {
     }
 
     return(
-        <div className="drillholes">
+        <div className="drillholes" style={{height:`${!expanded?"160px":"fit-content"}`}}>
             {
 
-                <div style={{height:`${!expanded?"160px":"fit-content"}`}} id={props.hole.config.name} className="hole">
+                <div  id={props.hole.config.name} className="hole">
                     <div className="archiveHoleHeader">
                         {
                             !editinfo?
-                            <h5 onClick={()=>setExpanded(!expanded)}>
+                            <h5 onClick={handleExpand}>
                                 {props.hole.config.name} 
                                 <i className="material-icons">
                                 {!expanded?"expand_more":"expand_less"}

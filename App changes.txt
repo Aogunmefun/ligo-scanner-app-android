@@ -19,3 +19,7 @@ Ability to generate and store csv files locally for them to pull out with their 
 Archive button should not delete drillholes, but simply archive them. It's only for presentation purposes so that you can filter out drillholes
 
 Lock the other devices for now
+
+Add ability to logout
+
+Create Web-App for viewing data
