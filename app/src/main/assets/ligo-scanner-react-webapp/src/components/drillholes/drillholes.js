@@ -1,21 +1,25 @@
 import React, { useEffect, useState } from "react";
 import "./drillholes.css"
-
+import { CSVLink, CSVDownload } from "react-csv";
 
 function DrillHoles(props) {
     
-    const [expanded, setExpanded] = useState(false)
+    const [expanded, setExpanded] = useState(props.expanded?true:false)
     const [editinfo, setEditInfo] = useState(false)
     const [name, setName] = useState("")
     const [page, setPage] = useState(true)
+    const [csvready, setCsvReady] = useState(false)
 
     useEffect(()=>{
        
-        window.scroll({
-            top: document.querySelectorAll(".drillholes")[props.index].scrollHeight,
-            left:0,
-            behavior: 'smooth'
-        })
+        if (expanded) {
+            window.scroll({
+                top: document.querySelectorAll(".drillholes")[props.index].scrollHeight,
+                left:0,
+                behavior: 'smooth'
+            })
+        }
+        
         
     }, [expanded])
 
@@ -137,8 +141,11 @@ function DrillHoles(props) {
         }
     }
 
+
+
     return(
         <div className="drillholes" style={{height:`${!expanded?"160px":"fit-content"}`}}>
+            
             {
 
                 <div  id={props.hole.config.name} className="hole">
@@ -168,8 +175,8 @@ function DrillHoles(props) {
                             <h6>{"Start Depth: " + props.hole.config.start + "ft"}</h6>
                         </div>
                         <div className="drillholes--buttons">
-                            <button onClick={()=>props.handleSetActiveHole(props.index)} className="btn--setHoleActive">Set Active</button>
-                            <button onClick={()=>props.archiveHole(props.index)} className="btn--deleteHole">Archive</button>
+                            {props.handleSetActiveHole?<button onClick={()=>props.handleSetActiveHole(props.index)} className="btn--setHoleActive">Set Active</button>:""}
+                            {props.archiveHole?<button onClick={()=>props.archiveHole(props.index)} className="btn--deleteHole">Archive</button>:""}
                         </div>
                         
                     </div>

@@ -7,6 +7,8 @@ import DrillHole from "../../components/drillhole/drillhole";
 import DrillHoles from "../../components/drillholes/drillholes";
 import Modal from "../../components/modal/modal";
 import axios from "axios";
+import { CSVLink, CSVDownload } from "react-csv";
+import rgbHex from 'rgb-hex';
 
 
 import { Session } from "../../app";
@@ -39,7 +41,7 @@ function ScanPage(props) {
         // if(app.app.device.active === "orientation") navigate("/orientation")
         window.addEventListener("scanComplete", handleScanComplete)
         window.addEventListener("scanning", handleScanning)
-        
+        window.addEventListener('csvDownloaded', handleCsvDownloaded)
         // console.log("re-REndering")
 
     
@@ -48,6 +50,7 @@ function ScanPage(props) {
             // console.log("resolving")
             window.removeEventListener("scanning", handleScanning);
             window.removeEventListener("scanComplete", handleScanComplete);
+            window.removeEventListener('csvDownloaded', handleCsvDownloaded)
         }
 
         
@@ -58,7 +61,7 @@ function ScanPage(props) {
         if (app.app.user===null) return
         if(app.app.connected){
             axios({
-            url:"https://api.alphaspringsedu.com/ligo-get-user",
+            url:"http://api.alphaspringsedu.com/ligo-get-user",
             method:"POST",
             headers:{"Content-Type":"application/json"},
             data:{
@@ -107,7 +110,7 @@ function ScanPage(props) {
         if(!app.app.connected) return 
         console.log("uploading...", temp)
         axios({
-            url:"https://api.alphaspringsedu.com/ligo-upload",
+            url:"http://api.alphaspringsedu.com/ligo-upload",
             method:"POST",
             headers:{"Content-Type":"application/json"},
             data:{
@@ -132,7 +135,7 @@ function ScanPage(props) {
                 }) 
                 temp.user.drillholes[temp.active].data = comp
                 return axios({
-                    url:"https://api.alphaspringsedu.com/ligo-upload",
+                    url:"http://api.alphaspringsedu.com/ligo-upload",
                     method:"POST",
                     headers:{"Content-Type":"application/json"},
                     data:{
@@ -167,7 +170,7 @@ function ScanPage(props) {
     //     console.log("uploading")
     //     setLoading(true)
     //     axios({
-    //         url:"https://api.alphaspringsedu.com/ligo-upload",
+    //         url:"http://api.alphaspringsedu.com/ligo-upload",
     //         method:"POST",
     //         headers:{"Content-Type":"application/json"},
     //         data:{
@@ -263,7 +266,15 @@ function ScanPage(props) {
     }
 
     const createDrillHole = (name, interval, start)=>{
+        
         let temp = app.app
+        
+        if (temp.user.drillholes.some((hole,index)=>hole.config.name===name)) {
+            setModal({state:true, text:"Conflicting drillhole names"})
+            return
+        } 
+            
+        
         temp.user.drillholes.push({
             config: {
                 name: name,
@@ -518,6 +529,43 @@ function ScanPage(props) {
         upload(temp)
     }
 
+    function componentToHex(c) {
+        var hex = c.toString(16);
+        return hex.length == 1 ? "0" + hex : hex;
+    }
+
+    const getCSV = ()=>{
+        
+        let drillholes = app.app.user.drillholes
+        let csv = []
+        let scan
+
+        for (let i = 0; i < drillholes.length; i++) {
+            for (let j = 0; j < drillholes[i].data.length; j++) {
+                scan = drillholes[i].data[j]
+                csv.push(
+                    {
+                        drillholeName:drillholes[i].config.name,
+                        depth:scan.depth,
+                        color_R:scan.color.r,
+                        color_g:scan.color.g,
+                        color_b:scan.color.b,
+                        hex:"#"+rgbHex(scan.color.r,scan.color.g,scan.color.b)
+                        // hex:"#"+componentToHex(scan.color.r)+componentToHex(scan.color.g)+componentToHex(scan.color.b)
+                    }
+                )
+                
+            }
+            
+        }
+        console.log(csv)
+        return csv
+    }
+
+    const handleCsvDownloaded = ()=>{
+        setModal({state:true, text:"drillholes csv downloaded. Check your downloads folder"})
+    }
+
     return(
         <div style={{
             backgroundColor:`${create||scanning?"var(--lightGray)":""}`,
@@ -563,6 +611,7 @@ function ScanPage(props) {
                     newRoughness = {newRoughness}
                 />
                 :<>
+                    <CSVLink filename={"drillholes.csv"} data={getCSV()}>Download csv</CSVLink>
                     {
                         app.app.user.drillholes?.map((drillhole,index)=>{
                             return(

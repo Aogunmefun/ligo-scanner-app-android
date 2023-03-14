@@ -8,10 +8,11 @@
     width: 100%;
     transition: all 0.5s;
     overflow: hidden;
-    padding-top: 90px;
+    /* padding-top: 90px; */
+    padding-top: 50px;
     /* padding-bottom: 10px; */
-    height: 500px;
-    /* height: 100vh; */
+    /* height: 500px; */
+    height: 250px;
     /* gap: 50px; */
     
     /* margin-top: calc(var(--navbarHeight)); */

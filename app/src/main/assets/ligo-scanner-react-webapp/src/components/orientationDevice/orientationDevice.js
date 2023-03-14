@@ -23,15 +23,15 @@ function OrientationDevice(props) {
         window.addEventListener('orientationDisconnect', handleDisconnected)
         window.addEventListener('orientationFailedConnect', handleFailedConnect)
 
-        if (Android.pairedDevices() === 1) {
-            // setModal({state: true, text: "You're not connected to any devices"})
-            let temp = app.app
-            temp.device.name = null
-            temp.device.address = null
-            temp.device.active = null
-            temp.device.paired = false
-            app.setApp({...temp})
-        }
+        // if (Android.pairedDevices() === 1) {
+        //     // setModal({state: true, text: "You're not connected to any devices"})
+        //     let temp = app.app
+        //     temp.device.name = null
+        //     temp.device.address = null
+        //     temp.device.active = null
+        //     temp.device.paired = false
+        //     app.setApp({...temp})
+        // }
     }, [])
 
 
@@ -163,9 +163,10 @@ function OrientationDevice(props) {
             {connecting?<Loader loading={connecting} text={props.paired?"Disconnecting...":"Connecting..."} />:""}
             {loading?<Loader text="hold on..." />:""}
             
-                <img width="50%" src={logo} alt="" />
+                {/* <img width="50%" src={logo} alt="" /> */}
+            <p className="devicePageTitle">Structures</p>
                                         
-            <button onClick={startScan} className="btn--velocityDeviceConnect">{scanning?"Scanning...":"Scan for devices"}</button>
+            <button onClick={startScan} className="btn--velocityDeviceConnect btn--disabled">{scanning?"Scanning...":"Scan for devices"}<i className="material-icons">lock</i></button>
             {
                 scanning?
                 <div className="found-devices">

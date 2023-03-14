@@ -1,5 +1,5 @@
 import React, {useEffect, createContext, useState} from "react";
-import { BrowserRouter, HashRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, HashRouter, Route, Routes, useNavigate } from "react-router-dom";
 import HomePage from "./pages/home/homePage";
 import ConfigurePage from "./pages/configure/configurePage";
 import Navbar from "./components/navbar/navbar";
@@ -37,6 +37,7 @@ function App(props) {
     })
     const [modal, setModal] = useState({state:false, text:""})
     const [refresh, setRefresh] = useState(false)
+
 
     // const [app, setApp] = useState({
     //     device: {
@@ -169,6 +170,7 @@ function App(props) {
         }
     })
 
+
     const connected = ()=>{
         // console.log("CONNECTED", app.user.drillholes)
         setApp({
@@ -203,6 +205,7 @@ function App(props) {
     return (
         // <BrowserRouter>
         <HashRouter>
+            <Session.Provider value={{app:app, setApp:setApp}}>
             {app.navbar?<Navbar />:""}
             {
                 modal.state?
@@ -212,7 +215,7 @@ function App(props) {
                 />  
                 :""
             }
-            <Session.Provider value={{app:app, setApp:setApp}}>
+            
                 <Routes>
                 
                     <Route path="/" element={<LoginPage />} />

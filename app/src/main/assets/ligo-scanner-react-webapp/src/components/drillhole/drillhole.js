@@ -49,7 +49,7 @@ function DrillHole(props) {
     const upload = (temp)=>{
         setLoading(true)
         axios({
-            url:"https://api.alphaspringsedu.com/ligo-upload",
+            url:"http://api.alphaspringsedu.com/ligo-upload",
             method:"POST",
             headers:{"Content-Type":"application/json"},
             data:{

@@ -1,10 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import "./sidenav.css"
+import { Session } from "../../app";
 
 function SideNav(props) {
     
     let navigate = useNavigate()
+    const app = useContext(Session)
+
 
     return(
         <div className={`sidenav ${props.open?"sidenavOpen":""}`}>
@@ -22,6 +25,17 @@ function SideNav(props) {
                 props.setOpen(false)
                 navigate("/scan")
             }} className="btn--sidenav">Measurements</button>
+            <button onClick={()=>{
+                props.setOpen(false)
+                app.setApp({
+                    ...app.app,
+                    user:{
+                        email: null,
+                        drillholes:[]
+                    }
+                })
+                navigate("/")
+            }} className="btn--sidenav">Logout</button>
         </div>
     )
 }

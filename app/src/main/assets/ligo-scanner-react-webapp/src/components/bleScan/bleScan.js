@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Helmet } from "react-helmet";
 import "./bleScan.css"
-// import sensorimg from "./Nix_Mini2_Face_Amazon.png"
+import sensorimg from "./colorimeter.png"
 import logo from "./colors.png"
 import Loader from "../../components/loader/loader";
 import { Session } from "../../app";
 import axios from "axios";
 import Modal from "../modal/modal";
+import DrillHoles from "../drillholes/drillholes";
 
 function BLEScan(props) {
     
@@ -16,13 +17,14 @@ function BLEScan(props) {
     const [connecteddevice, setConnectedDevice] = useState()
     const [connecting, setConnecting] = useState(false)
     const [loading, setLoading] = useState(false)
+    const [viewdata, setViewData] = useState(false)
     const app = useContext(Session)
     const [modal, setModal] = useState({state:false, text:""})
 
     const upload = (temp)=>{
         setLoading(true)
         axios({
-            url:"https://api.alphaspringsedu.com/ligo-upload",
+            url:"http://api.alphaspringsedu.com/ligo-upload",
             method:"POST",
             headers:{"Content-Type":"application/json"},
             data:{
@@ -148,10 +150,13 @@ function BLEScan(props) {
             }
             {connecting?<Loader loading={connecting} text={app.app.device.paired?"Disconnecting...":"Connecting..."} />:""}
             {loading?<Loader text="hold on..." />:""}
-            <img width="30%" src={logo} alt="" />
+            {/* <img width="30%" src={logo} alt="" /> */}
+            <p className="devicePageTitle">Colors</p>
             {/* <h1>{!app.app.device.paired?"Pair Device":"Device Paired"}</h1> */}
             {/* <h1>{"Count: " + scannedDevices.length}</h1> */}
             {!app.app.device.paired?<button disabled={scanning} onClick={()=>scan()} id="scan">{scanning?"Scanning...":"Scan for devices"}</button>:""}
+            {viewdata?"":<button onClick={()=>setViewData(true)}>View Colorimeter data</button>}
+            {!app.app.device.paired?<h5>Click on a device to connect</h5>:""}
             {
                 scanning?
                 <div className="found-devices">
@@ -161,6 +166,7 @@ function BLEScan(props) {
                             scannedDevices.map((device,index)=>{
                                 return(
                                     <div onClick={()=>Android.connect(device.address)} key={device.address + index} id={device.address} className="found-device ">
+                                        <img className="found-device-img" src={sensorimg} alt="" />
                                         <div className="found-device-info">
                                             <p>{`Name: ${device.name}`}</p>
                                             <p>{`Address: ${device.address}`}</p>
@@ -180,11 +186,11 @@ function BLEScan(props) {
                     <h5 className="paired-device-title">Paired Device:</h5>
                     <div className="paired-device">
                         {
-                            <div className="found-device">
-
-                                <div className="found-device-info">
-                                    <p>{`Name: ${app.app.device.name}`}</p>
-                                    <p>{`Address: ${app.app.device.address}`}</p>
+                            <div style={{backgroundColor:"#1DA0A5",borderRadius:"1rem"}} className="found-device">
+                                <img className="found-device-img" src={sensorimg} alt="" />
+                                <div className="found-device-info" >
+                                    <p style={{color:"white"}}>{`Name: ${app.app.device.name}`}</p>
+                                    <p style={{color:"white"}}>{`Address: ${app.app.device.address}`}</p>
                                     {/* <p>{`Type: ${app.device.type}`}</p> */}
                                 </div>
                             </div>
@@ -196,6 +202,31 @@ function BLEScan(props) {
             {
                 app.app.device.paired?
                 <button onClick={disconnect} className="btn--disconnectDevice">Disconnect</button>
+                :""
+            }
+            {
+                viewdata?
+                <div className="dataView">
+                    <button onClick={()=>setViewData(false)} className="btn--flat"><i className="material-icons">close</i></button>
+                    <p>Colorimeter Data:</p>
+                    {
+                        app.app.user.drillholes?.map((drillhole,index)=>{
+                        return(
+                            <DrillHoles 
+                                key={"drillhole:"+drillhole+index}
+                                // archiveHole={archiveHole} 
+                                // handleSetActiveHole={handleSetActiveHole} 
+                                hole={drillhole} 
+                                index = {index}
+                                expanded={true}
+                                // handleEditHole = {handleEditHole}
+                                device = {"colorimeter"}
+                            />
+                        )
+                        })
+                    }
+                </div>
+                
                 :""
             }
             

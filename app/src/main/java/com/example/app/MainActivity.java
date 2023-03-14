@@ -2,6 +2,11 @@ package com.example.app;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.DownloadManager;
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
@@ -17,15 +22,21 @@ import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
 import android.net.NetworkRequest;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.os.Handler;
 import android.os.IBinder;
 import android.os.Vibrator;
+import android.util.Base64;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.webkit.ConsoleMessage;
+import android.webkit.DownloadListener;
 import android.webkit.JavascriptInterface;
+import android.webkit.MimeTypeMap;
 import android.webkit.PermissionRequest;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
@@ -36,12 +47,15 @@ import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.content.FileProvider;
 
 import com.mbientlab.metawear.MetaWearBoard;
 import com.mbientlab.metawear.Route;
@@ -55,8 +69,13 @@ import com.nix.nixsensor_lib.NixDeviceScanner;
 import com.nix.nixsensor_lib.NixScannedColor;
 import com.nix.nixsensor_lib.NixScannedSpectralData;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Set;
 
 import bolts.Continuation;
@@ -192,6 +211,33 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
 
         });
 
+//        webView.setDownloadListener(new DownloadListener() {
+//
+//            @Override
+//            public void onDownloadStart(String url, String userAgent,
+//                                        String contentDisposition, String mimetype,
+//                                        long contentLength) {
+//                DownloadManager.Request request = new DownloadManager.Request(
+//                        Uri.parse(url));
+//
+////                request.allowScanningByMediaScanner();
+//                request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED); //Notify client once download is completed!
+//                request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "Name of your downloadble file goes here, example: Mathematics II ");
+//                DownloadManager dm = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
+//                dm.enqueue(request);
+//                Toast.makeText(getApplicationContext(), "Downloading File", //To notify the Client that the file is being downloaded
+//                        Toast.LENGTH_LONG).show();
+//
+//            }
+//        });
+        webView.setDownloadListener(new DownloadListener() {
+            @Override
+            public void onDownloadStart(String url, String userAgent, String contentDisposition, String mimeType, long contentLength) {
+                webView.loadUrl(getBase64StringFromBlobUrl(url));
+                Log.d("blobURL", url);
+            }
+        });
+
         /**************/
 
 //        System.loadLibrary( Core.NATIVE_LIBRARY_NAME )/;
@@ -199,6 +245,55 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
 //        webView.addJavascriptInterface(new WebAppInterface(this), "Android");
 
     }
+
+    @JavascriptInterface
+    public void getBase64FromBlobData(String base64Data) throws IOException {
+        convertBase64StringToPdfAndStoreIt(base64Data);
+    }
+    public static String getBase64StringFromBlobUrl(String blobUrl) {
+        if(blobUrl.startsWith("blob")){
+            return "javascript: var xhr = new XMLHttpRequest();" +
+                    "xhr.open('GET', '"+ blobUrl +"', true);" +
+                    "xhr.setRequestHeader('Content-type','application/csv');" +
+                    "xhr.responseType = 'blob';" +
+                    "xhr.onload = function(e) {" +
+                    "    if (this.status == 200) {" +
+                    "        var blobPdf = this.response;" +
+                    "        var reader = new FileReader();" +
+                    "        reader.readAsDataURL(blobPdf);" +
+                    "        reader.onloadend = function() {" +
+                    "            base64data = reader.result;" +
+                    "            Android.getBase64FromBlobData(base64data);" +
+                    "        }" +
+                    "    }" +
+                    "};" +
+                    "xhr.send();";
+        }
+        return "javascript: console.log('It is not a Blob URL');";
+    }
+    private void convertBase64StringToPdfAndStoreIt(String base64PDf) throws IOException {
+        Log.d("base64", base64PDf);
+        final int notificationId = 1;
+        String currentDateTime = DateFormat.getDateTimeInstance().format(new Date());
+        final File dwldsPath = new File(Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_DOWNLOADS) + "/drillholes_" + currentDateTime.replaceAll("\\s", "").replaceAll(":", "_").replaceAll(",", "_")  + ".csv");
+        byte[] pdfAsBytes = Base64.decode(base64PDf.replaceFirst("^data:text/csv;base64,", ""), 0);
+        FileOutputStream os;
+        os = new FileOutputStream(dwldsPath, false);
+        os.write(pdfAsBytes);
+        os.flush();
+        webView.post(new Runnable() {
+            @Override
+            public void run() {
+                webView.evaluateJavascript("window.dispatchEvent(new CustomEvent('csvDownloaded'))", null);
+            }
+        });
+
+    }
+
+
+
+
 
     @JavascriptInterface
     public int pairedDevices() {
@@ -688,4 +783,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
     public void onServiceDisconnected(ComponentName name) {
 
     }
+
+
+
 }

@@ -31,7 +31,7 @@ function DevicesPage() {
         setLoading(true)
         console.log(temp)
         axios({
-            url:"https://api.alphaspringsedu.com/ligo-upload",
+            url:"http://api.alphaspringsedu.com/ligo-upload",
             method:"POST",
             headers:{"Content-Type":"application/json"},
             data:{

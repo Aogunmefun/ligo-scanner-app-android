@@ -9,7 +9,7 @@
     background-color: rgba(211, 211, 211, 0.8);
     /* opacity: 0.5; */
     padding-top: 20px;
-    position: absolute;
+    position: fixed;
     height: 100vh;
     top: 0;
     z-index: 2;

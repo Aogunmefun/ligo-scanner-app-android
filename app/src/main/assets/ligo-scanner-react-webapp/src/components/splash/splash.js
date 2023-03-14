@@ -26,7 +26,7 @@ function Splash(props) {
             <div className="splashCircle">
                 <img width="80%" src={logo} alt="" />
             </div>
-            <button id="btn--splash" className={`${props.begin?"btn--splashOut":"btn--splash"}`} onClick={()=>begin()}>Tap to begin</button>
+            {/* <button id="btn--splash" className={`${props.begin?"btn--splashOut":"btn--splash"}`} onClick={()=>begin()}>Tap to begin</button> */}
         </div>
     )
 }

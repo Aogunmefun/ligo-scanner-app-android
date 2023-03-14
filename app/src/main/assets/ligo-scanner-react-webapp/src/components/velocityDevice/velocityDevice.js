@@ -32,8 +32,9 @@ function VelocityDevice(props) {
 
     return(
         <div className="velocityDevice">
-            <img src={logo} width="40%" alt="" />
-            <button onClick={changeDevice} className="btn--velocityDeviceConnect">{active?"Disconnect":"Make Active"}</button>
+            {/* <img src={logo} width="40%" alt="" /> */}
+            <p className="devicePageTitle">Strength</p>
+            <button onClick={changeDevice} className="btn--velocityDeviceConnect btn--disabled">{active?"Disconnect":"Make Active"} <i className="material-icons">lock</i></button>
         </div>
     )
 }

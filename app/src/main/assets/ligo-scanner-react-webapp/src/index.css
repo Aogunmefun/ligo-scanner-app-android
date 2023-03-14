@@ -29,6 +29,14 @@ h1,h2,h3,h4,h5,h6 {
     font-weight: 100;
 }
 
+.devicePageTitle {
+    color: var(--primaryColor);
+    font-weight: 600;
+    font-size: 27px;
+    filter: blur(0.3px);
+    text-shadow: 1px 1.5px var(--gray);
+}
+
 .app {
     padding: 10px;
     padding-top: 20px;
@@ -39,7 +47,7 @@ h1,h2,h3,h4,h5,h6 {
     
 }
 
-button, input[type="submit"] {
+button, input[type="submit"], a {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -63,6 +71,12 @@ button, input[type="submit"] {
     box-shadow: none;
     color: var(--black);
     
+}
+
+.btn--disabled {
+    background-color: var(--gray);
+    border-color: var(--gray);
+    pointer-events: none;
 }
 
 input[type="text"], input[type="number"] {

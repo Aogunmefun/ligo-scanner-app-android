@@ -32,8 +32,9 @@ function RoughnessDevice(props) {
 
     return(
         <div className="roughnessDevice">
-            <img src={logo} width="50%" alt="" />
-            <button onClick={changeDevice} className="btn--roughnessDeviceConnect">{active?"Disconnect":"Make Active"}</button>
+            {/* <img src={logo} width="50%" alt="" /> */}
+            <p className="devicePageTitle">Roughness</p>
+            <button onClick={changeDevice} className="btn--roughnessDeviceConnect btn--disabled">{active?"Disconnect":"Make Active"}<i className="material-icons">lock</i></button>
             
                 
             

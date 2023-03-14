@@ -9,9 +9,10 @@ import { Session } from "../../app";
 import Modal from "../../components/modal/modal";
 
 
+
 function LoginPage() {
     
-    const [begin, setBegin] = useState(false)
+    const [begin, setBegin] = useState(true)
     const [email, setEmail] = useState("")
     const [stage, setStage] = useState(1)
     const [submitEmail, setSubmitEmail] = useState(false)
@@ -51,7 +52,7 @@ function LoginPage() {
         setLoading(true)
         console.log("yo")
         axios({
-            url:"https://api.alphaspringsedu.com/ligo-find-user",
+            url:"http://api.alphaspringsedu.com/ligo-find-user",
             method:"POST",
             headers:{"Content-Type":"application/json"},
             data:{
@@ -60,12 +61,24 @@ function LoginPage() {
             }
         }).then((res)=>{
             console.log(res.data)
-            setStage(2)
-            setLoading(false)
-            setSubmitEmail(false)
+            
             if (res.data.res===null) {
+                setStage(2)
+                setLoading(false)
+                setSubmitEmail(false)
                 setModal({state:true, text:"User doesn't Exist. However, we created a new user using this email"})
-
+            }
+            else {
+                app.setApp({
+                    ...app.app,
+                    user: {
+                        email: res.data.user.email,
+                        drillholes: res.data.user.drillholes
+                    }
+                })
+                navigate("/devices")
+                // console.log(res.data)
+                
             }
             
         }).catch((e)=>{
@@ -87,7 +100,7 @@ function LoginPage() {
         setLoading(true)
         console.log(code)
         axios({
-            url:"https://api.alphaspringsedu.com/ligo-login",
+            url:"http://api.alphaspringsedu.com/ligo-login",
             method:"POST",
             headers:{"Content-Type":"application/json"},
             data:{
@@ -101,8 +114,6 @@ function LoginPage() {
                 
             }
             else {
-                navigate("/devices")
-                console.log(res.data)
                 app.setApp({
                     ...app.app,
                     user: {
@@ -110,16 +121,21 @@ function LoginPage() {
                         drillholes: res.data.res.drillholes
                     }
                 })
+                navigate("/devices")
+                // console.log(res.data)
+                
             }
             setLoading(false)
         })
     }
 
+    
+
     return(
-        <div className="loginPage">
+        <div  className="loginPage">
+        
         {modal.state?<Modal text={modal.text} setModal={setModal} close={modal.close} />:""}
             <div className="loginDisplay">
-                
                 <Splash findUser={findUser} begin={begin} setBegin={setBegin} />
                 <Loader loading={loading} />
                 {   
