@@ -51,6 +51,11 @@
 .loginFields > input {
     width: 90%;
     box-shadow: 0px 0px 5px var(--gray);
+    
+}
+.loginFields > select {
+    width: 90%;
+    background-color: white;
 }
 .loginFields > * {
     text-align: center;
@@ -59,4 +64,8 @@
 }
 .loginFields > h2 {
     font-size: 15px;
+}
+
+.btn--login {
+    animation: appear 0.3s normal forwards;
 }

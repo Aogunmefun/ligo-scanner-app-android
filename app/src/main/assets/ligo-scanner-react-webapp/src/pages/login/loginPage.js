@@ -61,14 +61,14 @@ function LoginPage() {
             }
         }).then((res)=>{
             console.log(res.data)
-            
+            setStage(2)
+            setLoading(false)
+            setSubmitEmail(false)
             if (res.data.res===null) {
-                setStage(2)
-                setLoading(false)
-                setSubmitEmail(false)
+                
                 setModal({state:true, text:"User doesn't Exist. However, we created a new user using this email"})
             }
-            else {
+            if (JSON.parse(localStorage.getItem("emails")) && JSON.parse(localStorage.getItem("emails")).includes(email)) {
                 app.setApp({
                     ...app.app,
                     user: {
@@ -77,8 +77,6 @@ function LoginPage() {
                     }
                 })
                 navigate("/devices")
-                // console.log(res.data)
-                
             }
             
         }).catch((e)=>{
@@ -114,6 +112,8 @@ function LoginPage() {
                 
             }
             else {
+                let storedEmails = JSON.parse(localStorage.getItem("emails"))
+                storedEmails?localStorage.setItem("emails", JSON.stringify([...storedEmails, res.data.res.email])):localStorage.setItem("emails", JSON.stringify([res.data.res.email]))
                 app.setApp({
                     ...app.app,
                     user: {
@@ -127,6 +127,13 @@ function LoginPage() {
             }
             setLoading(false)
         })
+    }
+
+    const handleEmailSelect = (ev)=>{
+        if(ev.target.value !== "") {
+            setEmail(ev.target.value)
+            setSubmitEmail(true)
+        }
     }
 
     
@@ -143,12 +150,24 @@ function LoginPage() {
                         {
                             stage===1?
                             <form className={`loginFields ${stage===1?"loginFormAppear":"slideOutRight"}`} onSubmit={findUser}>
-                                <input type="text" 
+                                {<input type="text" 
                                     placeholder="Enter Email" 
                                     value={email} 
                                     onChange={handleEmail} 
                                     disabled={loading}
-                                />
+                                />}
+                                <h5> <hr />  Or <hr /> </h5>
+                                <select  onChange={handleEmailSelect}>
+                                    <option value="">Click to select an email</option>
+                                    {
+                                        JSON.parse(localStorage.getItem("emails"))?.map((storedEmail,index)=>{
+                                            return(
+                                                <option key={"storedEmails"+storedEmail} value={storedEmail}>{storedEmail}</option>
+                                            )
+                                        })
+                                        
+                                    }
+                                </select>
                             </form>
                             :""
                         }
@@ -162,7 +181,7 @@ function LoginPage() {
                             :""
                         }
                         
-                        {<button onClick={findUser} style={{opacity:`${submitEmail?1:0}`}} className="btn--flat">Next<i style={{opacity:`${submitEmail?1:0}`}} className="material-icons">arrow_forward</i></button>}
+                        {<button onClick={findUser} style={{display:`${submitEmail?"":"none"}`}} className="btn--flat btn--login">Next<i  className="material-icons">arrow_forward</i></button>}
                     </div>
                     
             }

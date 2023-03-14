@@ -543,6 +543,7 @@ function ScanPage(props) {
         for (let i = 0; i < drillholes.length; i++) {
             for (let j = 0; j < drillholes[i].data.length; j++) {
                 scan = drillholes[i].data[j]
+                console.log(scan.color.r,scan.color.g,scan.color.b)
                 csv.push(
                     {
                         drillholeName:drillholes[i].config.name,
@@ -550,7 +551,7 @@ function ScanPage(props) {
                         color_R:scan.color.r,
                         color_g:scan.color.g,
                         color_b:scan.color.b,
-                        hex:"#"+rgbHex(scan.color.r,scan.color.g,scan.color.b)
+                        hex:"#"+componentToHex(parseInt(scan.color.r)) + componentToHex(parseInt(scan.color.g)) + componentToHex(parseInt(scan.color.b))
                         // hex:"#"+componentToHex(scan.color.r)+componentToHex(scan.color.g)+componentToHex(scan.color.b)
                     }
                 )

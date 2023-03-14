@@ -199,6 +199,11 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
 
         webView.getSettings().setMediaPlaybackRequiresUserGesture(false);
 
+        webView.getSettings().setDomStorageEnabled(true);
+        webView.getSettings().setDatabaseEnabled(true);
+//        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+//            webView.getSettings().setDatabasePath("/data/data/" + webView.getContext().getPackageName() + "/databases/");
+//        }
 
         webView.setWebChromeClient(new WebChromeClient() {
 
@@ -276,7 +281,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         final int notificationId = 1;
         String currentDateTime = DateFormat.getDateTimeInstance().format(new Date());
         final File dwldsPath = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_DOWNLOADS) + "/drillholes_" + currentDateTime.replaceAll("\\s", "").replaceAll(":", "_").replaceAll(",", "_")  + ".csv");
+                Environment.DIRECTORY_DOWNLOADS) + "/drillholes_" + currentDateTime.replaceAll("\\s", "_").replaceAll(":", "_").replaceAll(",", "_")  + ".csv");
         byte[] pdfAsBytes = Base64.decode(base64PDf.replaceFirst("^data:text/csv;base64,", ""), 0);
         FileOutputStream os;
         os = new FileOutputStream(dwldsPath, false);
@@ -522,6 +527,7 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
             NixScannedColor firstScannedColor = scannedColorsList.get(0);
 
             short[] scanRgb = firstScannedColor.tosRgbValue();
+
             webView.post(new Runnable() {
                 @Override
                 public void run() {

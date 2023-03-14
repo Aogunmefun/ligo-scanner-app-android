@@ -70,7 +70,7 @@ function DevicesPage() {
                     <BLEScan paired={app.app.device.paired} device={app.app.device.active} changeDevice={changeDevice} />
                     <div className="deviceInfo">
                     <h3>Scan core samples for color data</h3>
-                    <h4>Use the button above to pair a device. Colorimeter devices are used for this and can speed up color aqusition for core samples</h4>
+                    <h4>Capture the calibrated color of the drill core by using either the volume up button or the capture button on the device.</h4>
                     </div>
                     <i className="material-icons-outlined">pan_tool_alt</i>
                     <h4>Swipe to explore More...</h4>
@@ -79,7 +79,7 @@ function DevicesPage() {
                     <VelocityDevice paired={app.app.device.paired} device={app.app.device.active} changeDevice={changeDevice} />
                     <div className="deviceInfo">
                     <h3>Take strength measurements</h3>
-                    <h4>Use the button above to pair a device. Ligo's Strength sensors can help you acquire strength characteristics of your device using sound propagation</h4>
+                    <h4>Use our strength sensor to measure the ultrasonic velocity of the drill core sample, which correlates with its uniaxial compression strength.</h4>
                     </div>
                     <i className="material-icons-outlined">pan_tool_alt</i>
                     <h4>Swipe to explore More...</h4>
@@ -88,7 +88,7 @@ function DevicesPage() {
                     <OrientationDevice paired={app.app.device.paired} device={app.app.device.active} changeDevice={changeDevice} />
                     <div className="deviceInfo">
                     <h3>Determine Structure angles</h3>
-                    <h4>Use the button above to pair a device. Using an IMU, characterize orientation for each of your samples</h4>
+                    <h4>Digitally measure and store the alpha and beta angles of a structure using our structural characterization sensor.</h4>
                     </div>
                     <i className="material-icons-outlined">pan_tool_alt</i>
                     <h4>Swipe to explore More...</h4>
@@ -97,7 +97,7 @@ function DevicesPage() {
                     <RoughnessDevice paired={app.app.device.paired} device={app.app.device.active} changeDevice={changeDevice} />
                     <div className="deviceInfo">
                     <h3>Characterize Roughness of core samples</h3>
-                    <h4>Use the button above to pair a device. Simply using your phone and the power of AI, Ligo offers you the ability to cahracterize roughness of your samples in real time</h4>
+                    <h4>Measure fracture roughness consistently with our roughness characterization sensor.</h4>
                     </div>
                     
                 </div>
