@@ -45,15 +45,15 @@ function BLEScan(props) {
         window.addEventListener('colorimeterConnected', handleConnected)
         window.addEventListener('colorimeterDisconnected', handleDisconnected)
         
-        if (Android.pairedDevices() === 1) {
-            // setModal({state: true, text: "You're not connected to any devices"})
-            let temp = app.app
-            temp.device.name = null
-            temp.device.address = null
-            temp.device.active = null
-            temp.device.paired = false
-            app.setApp({...temp})
-        }
+        // if (Android.pairedDevices() === 1) {
+        //     // setModal({state: true, text: "You're not connected to any devices"})
+        //     let temp = app.app
+        //     temp.device.name = null
+        //     temp.device.address = null
+        //     temp.device.active = null
+        //     temp.device.paired = false
+        //     app.setApp({...temp})
+        // }
 
     }, [])
 

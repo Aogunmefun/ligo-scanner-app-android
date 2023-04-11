@@ -208,7 +208,7 @@ function DrillHole(props) {
                             </h5>
                             
                         }
-                        <button onClick={props.newVelocity} className="btn--manualDepth">New Velocity</button>
+                        <button onClick={props.createNewVelocity} className="btn--manualDepth">New Velocity</button>
                 </>
             )
         }

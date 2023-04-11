@@ -12,12 +12,14 @@ import rgbHex from 'rgb-hex';
 
 
 import { Session } from "../../app";
+import NewVelocity from "../../components/newVelocity/newVelocity";
 
 function ScanPage(props) {
 
     const [scanning, setScanning] = useState(false)
     const [color, setColor] = useState(null)
     const [create, setCreate] = useState(false)
+    const [newvelocity, setNewVelocity] = useState(false)
     const [scanpageTab, setScanPageTab] = useState(1)
     const [timeStamp, setTimeStamp] = useState(0)
     const [rescan, setReScan] = useState(false)
@@ -134,6 +136,20 @@ function ScanPage(props) {
                     }
                 }) 
                 temp.user.drillholes[temp.active].data = comp
+                online = res.data.user.drillholes[temp.active]?.velocity
+                comp = temp.user.drillholes[temp.active]?.velocity.map((scan,index)=>{
+                    // console.log("why", index, scan.depth)
+                    if ((scan.depth === online[index]?.depth) && (scan.velocity === online[index]?.velocity)) {
+                        return {
+                            ...scan,
+                            synced: true
+                        }
+                    }
+                    else {
+                        return scan
+                    }
+                }) 
+                temp.user.drillholes[temp.active].velocity = comp
                 return axios({
                     url:"http://api.alphaspringsedu.com/ligo-upload",
                     method:"POST",
@@ -456,20 +472,34 @@ function ScanPage(props) {
         setManualScan(false)
     }
 
-    const newVelocity = ()=>{
+    const createNewVelocity = ()=>{
+        setNewVelocity(true)
+    }
+
+    const newVelocity = (depth, velocity)=>{
         let temp = app.app
-        if (app.app.user.drillholes[app.app.active].velocity.some((vel,index)=>vel.depth==="--")) {
-            setModal({state:true, text:"Please first enter a depth for your previous measurement"})
+        // if (app.app.user.drillholes[app.app.active].velocity.some((vel,index)=>vel.depth==="--")) {
+        //     setModal({state:true, text:"Please first enter a depth for your previous measurement"})
+        //     return
+        // }
+        if ((velocity<1000)||(velocity>8000)) {
+            setModal({state:true, text:"Velocity measurment should be between 1000 and 8000"})
+            return
+        }
+        if ((app.app.user.drillholes[app.app.active].velocity.some((vel,index)=>vel.depth===depth))&&velocity) {
+            setModal({state:true, text:"This depth already exists for your strength measurements"})
             return
         }
         temp.user.drillholes[app.app.active].velocity.push({
-            depth:"--",
-            velocity: "--",
+            depth:depth,
+            velocity: velocity,
             synced: false
         })
         console.log("new velocity")
         app.setApp({...temp})
+        setNewVelocity(false)
         upload(temp)
+
     }
 
     const handleChangeVelocity = (depth, velocity, index, changedepth)=>{
@@ -603,7 +633,7 @@ function ScanPage(props) {
                     scanning={scanning}
                     index = {app.app.active}
                     changeStartDepth = {handleChangeStartDepth}
-                    newVelocity = {newVelocity}
+                    createNewVelocity = {createNewVelocity}
                     changeVelocity = {handleChangeVelocity}
                     newOrientation = {newOrientation}
                     changeOrientation={changeOrientation}
@@ -632,6 +662,7 @@ function ScanPage(props) {
                 
             }
             {create?<DrillHoleConfig handleCloseNewDrillhole={handleCloseNewDrillhole} createDrillHole = {createDrillHole} />:""}
+            {newvelocity?<NewVelocity newVelocity={newVelocity} setNewVelocity={setNewVelocity} />:""}
             {rescan?
                 <div className="reScan">
                     <h3>{app.app.user.drillholes[app.app.active].data[rescanindex].depth+"ft"}</h3>

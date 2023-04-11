@@ -8,6 +8,7 @@ import RoughnessDevice from "../../components/roughnessDevice/roughnessDevice";
 import Loader from "../../components/loader/loader";
 import axios from "axios";
 import Modal from "../../components/modal/modal";
+import DrillcoreDevice from "../../components/drillcoreDevice/drillcoreDevice";
 
 function DevicesPage() {
     const app = useContext(Session)
@@ -47,6 +48,7 @@ function DevicesPage() {
     
 
     const changeDevice = (dev)=>{
+        console.log("changing", dev)
         let temp = app.app
         temp.device.active = dev
         app.setApp({...temp})
@@ -66,6 +68,15 @@ function DevicesPage() {
             {/* <h1>Devices</h1> */}
             {loading?<Loader text="..." />:""}
             <div className="devicesContainer">
+                <div className="device">
+                    <DrillcoreDevice paired={app.app.device.paired} device={app.app.device.active} changeDevice={changeDevice} />
+                    <div className="deviceInfo">
+                    <h3>Scan entire drill cores</h3>
+                    <h4>Using image stitching, create a picture representative of an entire drill core by recording a video along it's length</h4>
+                    </div>
+                    <i className="material-icons-outlined">pan_tool_alt</i>
+                    <h4>Swipe to explore More...</h4>
+                </div>
                 <div className="device">
                     <BLEScan paired={app.app.device.paired} device={app.app.device.active} changeDevice={changeDevice} />
                     <div className="deviceInfo">

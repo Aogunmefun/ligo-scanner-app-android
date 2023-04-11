@@ -72,6 +72,9 @@ import com.nix.nixsensor_lib.NixScannedSpectralData;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -754,7 +757,50 @@ public class MainActivity extends AppCompatActivity implements ServiceConnection
         });
     }
 
-//    Laser Device
+    @JavascriptInterface
+    public void startCamera() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            Log.d("denied","Camera denied bro");
+            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.CAMERA}, 1);
+        }
+        else {
+//            Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
+            Intent intent = new Intent(android.provider.MediaStore.INTENT_ACTION_VIDEO_CAMERA);
+            startActivity(intent);
+        }
+
+    }
+
+    @JavascriptInterface
+    public String getFile() throws IOException {
+        if (ContextCompat.checkSelfPermission(
+                getBaseContext(), Manifest.permission.READ_EXTERNAL_STORAGE) ==
+                PackageManager.PERMISSION_GRANTED) {
+            String path = Environment.getExternalStorageDirectory().toString()+"/DCIM/Camera";
+//        String path = "/storage/sdcard0/DCIM/Camera/";
+            Log.d("Files", "Path: " + path);
+//        File directory = new File(path);
+            File dcimDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).toString()+"/Camera");
+            File[] files = dcimDir.listFiles();
+            Log.d("Files", "Size: "+ files.length);
+            Log.d("Files", "FileName:" + files[files.length-1].getName());
+            Path mypath = Paths.get(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DCIM).toString()+"/Camera/"+files[files.length-1].getName());
+            long bytes = Files.size(mypath);
+            Log.d("File size", String.valueOf(bytes/1024));
+            return files[files.length-1].getName();
+        }
+        else {
+            // You can directly ask for the permission.
+            // The registered ActivityResultCallback gets the result of this request.
+            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.READ_EXTERNAL_STORAGE}, 1);
+            return null;
+        }
+
+
+    }
+
+
+    //    Laser Device
     private static String[] requiredBluetoothPermissions() {
         ArrayList<String> requiredPermissions = new ArrayList<>();
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {

@@ -5,7 +5,7 @@ import logo from "./roughness.png"
 
 
 function RoughnessDevice(props) {
-    const [active, setActive] = useState()
+    const [active, setActive] = useState(false)
     const [loaded, setLoaded] = useState(false)
     const app = useContext(Session)
 
@@ -35,7 +35,7 @@ function RoughnessDevice(props) {
             {/* <img src={logo} width="50%" alt="" /> */}
             <p className="devicePageTitle">Roughness</p>
             <button onClick={changeDevice} className="btn--roughnessDeviceConnect btn--disabled">{active?"Disconnect":"Make Active"}<i className="material-icons">lock</i></button>
-            
+            <button onClick={()=>Android.startCamera()}>Open Camera</button>
                 
             
 

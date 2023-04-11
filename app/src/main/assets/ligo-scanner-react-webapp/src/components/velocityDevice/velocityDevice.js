@@ -6,6 +6,7 @@ import logo from "./strength.png"
 function VelocityDevice(props) {
 
     const [active, setActive] = useState()
+    const [available, setAvailable] = useState(true)
     const app = useContext(Session)
 
     useEffect(()=>{
@@ -34,7 +35,11 @@ function VelocityDevice(props) {
         <div className="velocityDevice">
             {/* <img src={logo} width="40%" alt="" /> */}
             <p className="devicePageTitle">Strength</p>
-            <button onClick={changeDevice} className="btn--velocityDeviceConnect btn--disabled">{active?"Disconnect":"Make Active"} <i className="material-icons">lock</i></button>
+            {
+                available?
+                <button onClick={changeDevice} className="btn--velocityDeviceConnect">{active?"Disconnect":"Make Active"}</button>
+                :<button onClick={changeDevice} className="btn--velocityDeviceConnect btn--disabled">{active?"Disconnect":"Make Active"} <i className="material-icons">lock</i></button>
+            }
         </div>
     )
 }

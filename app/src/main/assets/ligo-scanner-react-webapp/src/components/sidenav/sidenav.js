@@ -23,6 +23,11 @@ function SideNav(props) {
             }} className="btn--sidenav">Devices</button>
             <button onClick={()=>{
                 props.setOpen(false)
+                console.log("sidenav", app.app.device.active)
+                if (app.app.device.active === "coreScan") {
+                    navigate("/coreScan")
+                    return
+                }
                 navigate("/scan")
             }} className="btn--sidenav">Measurements</button>
             <button onClick={()=>{

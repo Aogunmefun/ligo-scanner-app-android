@@ -9,6 +9,7 @@ import ImuPage from "./pages/imu/imuPage";
 import Splash from "./components/splash/splash";
 import LoginPage from "./pages/login/loginPage";
 import Modal from "./components/modal/modal";
+import CoreScan from "./pages/coreScan/coreScan";
 
 export const Session = createContext()
 
@@ -41,7 +42,7 @@ function App(props) {
 
     // const [app, setApp] = useState({
     //     device: {
-    //         active: "colorimeter",
+    //         active: "coreScan",
     //         name: null,
     //         address: null,
     //         // type: null,
@@ -56,7 +57,20 @@ function App(props) {
     //     timeStamp:0,
     //     rescan:false,
     //     rescanindex:null,
-    //     user:null
+    //     user: {
+    //         email: "deoluutah@yahoo.com",
+    //         drillholes: [],
+    //         drillcores: [
+    //             {
+    //                 name:"AA45",
+    //                 startDepth: "12",
+    //                 endDepth: "32",
+    //                 type: "UG",
+    //                 fileName: "asdfadsf"
+    //             }
+
+    //         ]
+    //     }
         
     // })
     
@@ -84,10 +98,12 @@ function App(props) {
         // console.log("refresh", app.user.drillholes)
         window.addEventListener('InternetConnected', connected)
         window.addEventListener('InternetDisconnected', disconnected)
+        console.log(app.device)
         return ()=>{
             window.removeEventListener('InternetConnected', connected)
             window.removeEventListener('InternetDisconnected', disconnected)
         }
+        
     })
 
 
@@ -144,7 +160,7 @@ function App(props) {
                     <Route path="/devices" element={<DevicesPage />} />
                     <Route path="/scan" element={<ScanPage />} />
                     <Route path="/orientation" element={<ImuPage />} />
-                    
+                    <Route path="/coreScan" element={<CoreScan />} />
                 </Routes>
             </Session.Provider>
             {/* <button onClick={()=>Android.isPaired()}>Get Paired Devices</button> */}
